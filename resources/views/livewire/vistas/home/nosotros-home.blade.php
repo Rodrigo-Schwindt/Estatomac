@@ -1,4 +1,4 @@
-<section class="bg-white mt-[80px] mb-[51px]">
+<section class="bg-white mt-[104px]">
     @php
         $nosotros = \App\Models\Nosotros::first();
     @endphp
@@ -33,7 +33,8 @@
                     <a 
                         wire:navigate 
                         href="/nosotros"
-                        class="flex justify-center items-center text-black text-center font-inter text-[14px] font-normal leading-normal uppercase bg-transparent w-[164px] h-[44px] rounded-[4px] border border-black"
+                        class="cursor-pointer flex justify-center items-center text-black text-center font-inter text-[14px] font-normal leading-normal uppercase bg-transparent w-[164px] h-[44px] rounded-[4px] border border-black                         transition-colors duration-300
+                        hover:border-[#E4002B] hover:text-[#E4002B]"
                     >
                         Más información
                     </a>

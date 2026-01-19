@@ -110,22 +110,7 @@
                       placeholder="Descripción opcional del slider">{{ $slider->description }}</textarea>
             <p id="description-error" class="mt-1 text-red-600 text-sm hidden"></p>
         </div>
-                    <label for="title" class="block text-sm font-medium text-slate-900 mb-2">
-                URL
-            </label>
-            <input type="url"
-       id="url"
-       name="url"
-       value="{{ $slider->url }}"
-       placeholder="https://tudominio.com/..."
-       class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none">
 
-
-    <p id="url-error" class="mt-1 text-red-600 text-sm hidden"></p>
-
-    <p class="text-xs text-slate-500 mt-1">
-        URL de destino del boton.
-    </p>
 
         <div>
             <label for="orden" class="block text-sm font-medium text-slate-900 mb-2">

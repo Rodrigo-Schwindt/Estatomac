@@ -88,12 +88,18 @@
                             {{ preg_replace('/(&nbsp;)+$/', '', strip_tags($slider->description)) }}
                         </p>
                         <a 
-                            href="{{ $slider->url }}"
-                            class="
-                                absolute 
-                                bottom-[66px] 
-                                flex w-[184px] px-[5px] py-[10px] justify-center items-center rounded-[4px] border border-white w-[164px] h-[44px] text-white text-center font-inter text-[14px] font-normal leading-normal uppercase bg-transparent
-                            "
+                        wire:navigate href="/productos"
+                        class="
+                        absolute 
+                        bottom-[66px] 
+                        flex w-[184px] px-[5px] py-[10px] justify-center items-center 
+                        w-[164px] h-[44px] 
+                        text-white text-center font-inter text-[14px] font-normal leading-normal uppercase 
+                        bg-transparent 
+                        rounded-[4px] border border-white 
+                        transition-colors duration-300
+                        hover:border-[#E4002B] hover:text-[#E4002B]
+                        "
                         >
                             Ver productos
                         </a>
@@ -146,9 +152,246 @@
             </template>
             @endforeach
 
+        </div>
+    </div>
+    @endif
+
+    <div class="pt-[26px] pb-[20px] bg-[#F4F4F4]">
+        <div class="max-w-[1224px] mx-auto">
+            <div class="mb-[26px] flex gap-[28px]">
+                <input
+                    type="text"
+                    wire:model.defer="search"
+                    placeholder="Marca / Equivalencias / Atributo / Código"
+                    class="w-[912px] h-[44px] rounded-[4px] border border-[#F1F1F1] bg-white placeholder:text-black placeholder:font-inter placeholder:text-[15px] placeholder:font-normal placeholder:leading-normal px-[16px]"
+                />
+                <div class="flex gap-[36px]">
+                    <label class="flex items-center gap-[8px] cursor-pointer" wire:click="toggleTipo('nuevo')">
+                        <img src="{{ asset($tipo === 'nuevo' ? 'check1.svg' : 'check0.svg') }}" 
+                             alt="check" 
+                             class="w-5 h-5">
+                        <span class="text-black font-inter text-[15px] font-normal leading-normal">Nuevo</span>
+                    </label>
+                
+                    <label class="flex items-center gap-[8px] cursor-pointer" wire:click="toggleTipo('recambio')">
+                        <img src="{{ asset($tipo === 'recambio' ? 'check1.svg' : 'check0.svg') }}" 
+                             alt="check" 
+                             class="w-5 h-5">
+                        <span class="text-black font-inter text-[15px] font-normal leading-normal">Recambio</span>
+                    </label>
+                </div>
             </div>
+        
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-[24px]">
+        
+                <div class="space-y-[16px]">
+                    <div class="flex items-center gap-[10px] text-black font-inter text-[20px] font-bold leading-[140%]">
+                        <img src="cate.svg" class="w-[29px] h-[29px]">
+                        Categoría
+                    </div>
+                
+                    <div class="relative">
+                        <select wire:model.live="categoriaId" 
+                                class="w-full h-[44px] px-[12px] bg-white border border-[#E5E5E5] rounded-[4px] appearance-none pr-10 cursor-pointer"
+                                id="categoriaSelect">
+                            <option class="text-black font-inter text-[15px] font-normal leading-normal" value="">Categorías</option>
+                            @foreach($categorias as $cat)
+                                <option  value="{{ $cat->id }}">{{ $cat->title }}</option>
+                            @endforeach
+                        </select>
+                        <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-200" id="arrowCategoria">
+                            <svg width="13" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6.06226 7.5L7.84993e-05 1.88257e-07L12.1244 -8.71687e-07L6.06226 7.5Z" fill="#747474"/>
+                            </svg>
+                        </div>
+                    </div>
+                
+                    @if($categoriaId && $subcategoriasActuales->count() > 0)
+                        @foreach($subcategoriasActuales as $sub)
+                            <div>
+                 
+                                <input
+                                    type="text"
+                                    wire:model.defer="filtrosSubcategorias.{{ $sub->id }}"
+                                    placeholder={{ $sub->title }}
+                                    class="w-full h-[44px] px-[12px] rounded-[4px] border border-[#F1F1F1] bg-white placeholder:text-[#636363] placeholder:font-inter placeholder:text-[15px] placeholder:font-normal placeholder:leading-normal"
+                                />
+                            </div>
+                        @endforeach
+                    @endif
+                </div>
+                
+                <div class="space-y-[16px]">
+                    <div class="flex items-center gap-[10px] text-black font-inter text-[20px] font-bold leading-[140%]">
+                        <img src="marc.svg" class="w-[39px] h-[28px]">
+                        Marca
+                    </div>
+                
+                    <div class="relative">
+                        <select wire:model.live="marcaId" 
+                                class="cursor-pointer w-full h-[44px] px-[12px] rounded-[4px] border border-[#F1F1F1] bg-white appearance-none pr-10"
+                                id="marcaSelect">
+                            <option value="" class="text-black font-inter text-[15px] font-normal leading-normal">Marca</option>
+                            @foreach($marcas as $marca)
+                                <option value="{{ $marca->id }}">{{ $marca->title }}</option>
+                            @endforeach
+                        </select>
+                        <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-200" id="arrowMarca">
+                            <svg width="13" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6.06226 7.5L7.84993e-05 1.88257e-07L12.1244 -8.71687e-07L6.06226 7.5Z" fill="#747474"/>
+                            </svg>
+                        </div>
+                    </div>
+                
+                    @if($marcaId && $marcas->firstWhere('id', $marcaId)?->modelos->count() > 0)
+                    <div class="relative">
+                        <select wire:model.defer="modeloId" 
+                                class="cursor-pointer w-full h-[44px] px-[12px] rounded-[4px] border border-[#F1F1F1] bg-white appearance-none pr-10"
+                                id="modeloSelect">
+                            <option class="text-black font-inter text-[15px] font-normal leading-normal" value="">Modelo</option>
+                            @foreach($marcas->firstWhere('id', $marcaId)->modelos as $modelo)
+                                <option value="{{ $modelo->id }}">{{ $modelo->title }}</option>
+                            @endforeach
+                        </select>
+                        <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-200" id="arrowModelo">
+                            <svg width="13" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6.06226 7.5L7.84993e-05 1.88257e-07L12.1244 -8.71687e-07L6.06226 7.5Z" fill="#747474"/>
+                            </svg>
+                        </div>
+                    </div>
+                @endif
+                </div>
+        
+                <div class="space-y-[11px]">
+                    <div class="flex items-center gap-[10px] text-black font-inter text-[20px] font-bold leading-[140%]">
+                        <img src="code.svg" class="w-[34px] h-[34px]">
+                        Código
+                    </div>
+                
+                    <div class="relative">
+                        <input type="text" 
+                               wire:model.defer="codigo" 
+                               placeholder="Código Estatomac"
+                               class="w-full h-[44px] px-[12px] rounded-[4px] border border-[#F1F1F1] bg-white text-black font-inter text-[15px] font-normal leading-normal placeholder:text-[#636363]">
+                    </div>
+                </div>
+                
+                <div class="space-y-[16px] relative">
+                    <div class="flex items-center gap-[10px] text-black font-inter text-[20px] font-bold leading-[140%]">
+                        <img src="equi.svg" class="w-[29px] h-[29px]">
+                        Equivalencias
+                    </div>
+                
+                    <div class="relative">
+                        <input type="text" 
+                               wire:model.defer="equivalencia" 
+                               placeholder="Equivalencia"
+                               class="w-full h-[44px] px-[12px] rounded-[4px] border border-[#F1F1F1] bg-white text-black font-inter text-[15px] font-normal leading-normal placeholder:text-[#636363]">
+                    </div>
+                    
+                    <span class="absolute top-24 left-0 text-[#777] font-inter text-[15px] font-normal leading-normal">
+                        (GV, Dipra, PH, Ferman, Unifap)
+                    </span>
+                </div>
             </div>
-            @endif
-            <livewire:vistas.nosotros.nosotrosHome />
-            <livewire:vistas.novedades.destacadas/>
+
+            <div class="flex justify-center gap-[18px] mt-[40px]">
+                <button
+                    wire:click="buscar"
+                    class="bg-[#E4002B] text-white px-[32px] h-[44px] rounded-[4px] text-[14px] font-inter uppercase cursor-pointer"
+                >
+                    Buscar
+                </button>
+            
+                <button
+                    wire:click="limpiarFiltros"
+                    class="border border-[#E4002B] text-[#E4002B] px-[32px] h-[44px] rounded-[4px] text-[14px] font-inter uppercase cursor-pointer"
+                >
+                    Limpiar
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="max-w-[1224px] mx-auto pt-[55px]">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[24px]">
+            @foreach($categorias as $categoria)
+                <button wire:click="seleccionarCategoria({{ $categoria->id }})"
+                   class="group relative bg-white rounded-[4px] overflow-hidden transition-all duration-300 text-left cursor-pointer">
+                    @if($categoria->image)
+                        <div class="w-[392px] h-[196px] overflow-hidden">
+                            <img src="{{ asset('storage/' . $categoria->image) }}"
+                                 alt="{{ $categoria->title }}"
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </div>
+                    @endif
+
+                    <div>
+                        <h3 class="text-[#111010] font-inter text-[16px] font-normal leading-[28px] mt-[11px]">
+                            {{ $categoria->title }}
+                        </h3>
+                    </div>
+                </button>
+            @endforeach
+        </div>
+    </div>
+
+    <livewire:vistas.nosotros.nosotros-home />
+    <livewire:vistas.productos.productos-destacados/>
+    <livewire:vistas.novedades.destacadas/>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoriaSelect = document.getElementById('categoriaSelect');
+            const arrowCategoria = document.getElementById('arrowCategoria');
+            
+            const marcaSelect = document.getElementById('marcaSelect');
+            const arrowMarca = document.getElementById('arrowMarca');
+            const codigoSelect = document.getElementById('codigoSelect');
+            const arrowCodigo = document.getElementById('arrowCodigo');
+
+            const equivalenciaSelect = document.getElementById('equivalenciaSelect');
+            const arrowEquivalencia = document.getElementById('arrowEquivalencia');
+
+            if (codigoSelect && arrowCodigo) {
+                codigoSelect.addEventListener('click', function() {
+                    const isRotated = arrowCodigo.style.transform.includes('rotate(180deg)');
+                    arrowCodigo.style.transform = isRotated ? 'rotate(0deg)' : 'rotate(180deg)';
+                });
+            }
+
+            if (equivalenciaSelect && arrowEquivalencia) {
+                equivalenciaSelect.addEventListener('click', function() {
+                    const isRotated = arrowEquivalencia.style.transform.includes('rotate(180deg)');
+                    arrowEquivalencia.style.transform = isRotated ? 'rotate(0deg)' : 'rotate(180deg)';
+                });
+            }
+            
+            if (categoriaSelect && arrowCategoria) {
+                categoriaSelect.addEventListener('click', function() {
+                    const isRotated = arrowCategoria.style.transform.includes('rotate(180deg)');
+                    arrowCategoria.style.transform = isRotated ? 'rotate(0deg)' : 'rotate(180deg)';
+                });
+            }
+            
+            if (marcaSelect && arrowMarca) {
+                marcaSelect.addEventListener('click', function() {
+                    const isRotated = arrowMarca.style.transform.includes('rotate(180deg)');
+                    arrowMarca.style.transform = isRotated ? 'rotate(0deg)' : 'rotate(180deg)';
+                });
+            }
+            
+            document.addEventListener('livewire:navigated', function() {
+                const modeloSelect = document.getElementById('modeloSelect');
+                const arrowModelo = document.getElementById('arrowModelo');
+                
+                if (modeloSelect && arrowModelo) {
+                    modeloSelect.addEventListener('click', function() {
+                        const isRotated = arrowModelo.style.transform.includes('rotate(180deg)');
+                        arrowModelo.style.transform = isRotated ? 'rotate(0deg)' : 'rotate(180deg)';
+                    });
+                }
+            });
+        });
+    </script>
 </div>

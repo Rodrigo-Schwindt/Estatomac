@@ -125,44 +125,53 @@ class="items-center bg-transparent absolute top-0 items-center flex z-50 w-full 
     @endif
 
     <nav class="hidden lg:flex items-center">
-        <div class="flex h-[40px] py-2 gap-[16px] items-center">
+        <div class="flex h-[40px] py-2 gap-[20px] items-center">
     
             <a wire:navigate href="/nosotros"
-               class="nav-link {{ request()->is('nosotros') ? 'active' : '' }} text-[#222] font-montserrat text-[16px] relative">
-               Nosotros
+               class="nav-link {{ request()->is('nosotros') ? 'active' : '' }} text-white font-inter text-[14px] font-normal leading-normal relative">
+               NOSOTROS
             </a>
     
-            <a 
-               class="nav-link {{ request()->is('productos*') ? 'active' : '' }} text-[#222] font-montserrat text-[16px] relative">
-               Productos
+            <a wire:navigate href="/productos"
+               class="nav-link {{ request()->is('productos*') ? 'active' : '' }} text-white font-inter text-[14px] font-normal leading-normal relative">
+               PRODUCTOS
             </a>
     
-            <a 
-               class="nav-link {{ request()->is('catalogos*') ? 'active' : '' }} text-[#222] font-montserrat text-[16px] relative">
-               Catálogos
-            </a>
     
-            <a 
-               class="nav-link {{ request()->is('info-tecnica') ? 'active' : '' }} text-[#222] font-montserrat text-[16px] relative">
-               Info técnica
+            <a wire:navigate href="/novedades"
+            class="nav-link {{ request()->is('novedades') ? 'active' : '' }} text-white font-inter text-[14px] font-normal leading-normal relative">
+            NOVEDADES
             </a>
-            <a 
-               class="nav-link {{ request()->is('novedades') ? 'active' : '' }} text-[#222] font-montserrat text-[16px] relative">
-               Novedades
+            
+            <a wire:navigate href="/contacto"
+            class="nav-link {{ request()->is('contacto') ? 'active' : '' }} text-white font-inter text-[14px] font-normal leading-normal relative">
+            CONTACTO
             </a>
+            @auth('cliente')
+            <a  href="{{ route('cliente.productos') }}"
+               class="nav-link text-white cursor-pointer font-inter text-[14px] font-normal
+                      w-[164px] h-[44px] rounded-[4px] border border-white
+                      flex justify-center items-center text-center relative
+                      hover:bg-white hover:text-black transition-colors">
+                {{ Auth::guard('cliente')->user()->nombre }}
+            </a>
+            @else
+            <livewire:auth.login-modal2 />
+            @endauth
+            <div class="h-full flex justify-center items-center text-center text-white relative ml-[8px]">
+                <svg width="2" height="34" viewBox="0 0 1 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0.349976 0L0.349977 34" stroke="currentColor" stroke-width="0.7"/>
+                </svg>
+            </div>
+            
     
-            <a
-               class="nav-link {{ request()->is('contacto') ? 'active' : '' }} text-[#222] font-montserrat text-[16px] relative">
-               Contacto
-            </a>
-    
-            <div class="ml-[28px]">
-                <livewire:search-modal2 />
+            <div >
+                <livewire:search-modal />
             </div>
         </div>
     </nav>
     <div class="lg:hidden ml-[60px]">
-        <livewire:search-modal2 />
+        <livewire:search-modal />
     </div>
     <button id="hamburger-btn"
     @click="open = true"

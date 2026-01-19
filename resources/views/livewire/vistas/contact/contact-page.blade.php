@@ -17,7 +17,7 @@
                 <nav class="text-white font-montserrat text-[12px] leading-[150%] flex items-center gap-1">
                     <a wire:navigate href="{{ url('/') }}" class="text-white font-montserrat text-[12px] font-bold leading-[150%] drop-shadow-[0_6px_20px_rgba(0,0,0,0.75)]">Inicio</a>
                     <span class="text-white font-montserrat text-[12px] leading-[150%] drop-shadow-[0_6px_20px_rgba(0,0,0,0.75)]">›</span>
-                    <span class="text-white font-montserrat text-[12px] leading-[150%] drop-shadow-[0_6px_20px_rgba(0,0,0,0.75)]">Nosotros</span>
+                    <span class="text-white font-montserrat text-[12px] leading-[150%] drop-shadow-[0_6px_20px_rgba(0,0,0,0.75)]">Contacto</span>
                 </nav>
             </div>
         </div>
@@ -182,7 +182,7 @@
 
                                     <button 
                                         type="submit" 
-                                        class="w-[184px] h-[44px] bg-transparent text-[#E40044] text-center font-inter text-[14px] rounded-[4px] border border-[#E40044] font-normal leading-normal uppercase">
+                                        class="w-[184px] h-[44px] bg-transparent text-[#E40044] text-center font-inter text-[14px] cursor-pointer rounded-[4px] border border-[#E40044] font-normal leading-normal uppercase transition-all duration-300 hover:bg-[#E4002B] hover:border-[#E4002B] hover:text-white">
                                         Enviar consulta
                                     </button>
                                 </div>

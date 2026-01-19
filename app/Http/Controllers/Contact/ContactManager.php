@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Contact;
 use App\Models\Banner;
+use App\Mail\ContactMail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
 
 class ContactManager extends Controller
 {
@@ -42,10 +44,8 @@ class ContactManager extends Controller
             'insta'         => 'nullable|string|max:255',
             'linkedin'      => 'nullable|string|max:255',
             'youtube'       => 'nullable|string|max:255',
-    
             'banner_title'  => 'nullable|string|max:255',
             'banner_image'  => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072',
-    
             'icono_1_temp'  => 'nullable|mimes:jpg,jpeg,png,webp,gif,svg|max:4096',
             'icono_2_temp'  => 'nullable|mimes:jpg,jpeg,png,webp,gif,svg|max:4096',
             'icono_3_temp'  => 'nullable|mimes:jpg,jpeg,png,webp,gif,svg|max:4096',
@@ -59,12 +59,10 @@ class ContactManager extends Controller
     
         $contact->fill($validated);
     
-        // Banner de sección - usar updateOrCreate para evitar problemas con unique
         $bannerData = [
             'title' => $request->input('banner_title', '')
         ];
     
-        // Manejar la imagen del banner
         if ($request->hasFile('banner_image')) {
             $banner = Banner::where('section', 'contacto')->first();
             
@@ -75,7 +73,6 @@ class ContactManager extends Controller
             $bannerData['image_banner'] = $request->file('banner_image')->store('banners/contacto', 'public');
         }
     
-        // Eliminar imagen del banner
         if ($request->has('remove_banner_image')) {
             $banner = Banner::where('section', 'contacto')->first();
             
@@ -85,13 +82,11 @@ class ContactManager extends Controller
             }
         }
     
-        // Usar updateOrCreate para crear o actualizar
         Banner::updateOrCreate(
             ['section' => 'contacto'],
             $bannerData
         );
     
-        // Iconos
         foreach ([1, 2, 3] as $i) {
             $temp = "icono_{$i}_temp";
     
@@ -111,9 +106,21 @@ class ContactManager extends Controller
         }
     
         $contact->save();
+
+        if ($contact->mail_adm) {
+            $mailData = [
+                'nombre' => 'Admin (Actualización de datos)',
+                'empresa' => 'Sistema Interno',
+                'email' => $contact->mail_adm,
+                'celular' => $contact->wssp,
+                'mensaje' => 'Se han actualizado los datos de contacto en el panel administrativo.'
+            ];
+
+            Mail::to($contact->mail_adm)->send(new ContactMail($mailData));
+        }
     
         return redirect()->back()->with('toast', [
-            'message' => 'Datos guardados correctamente',
+            'message' => 'Datos guardados y correo enviado correctamente',
             'type' => 'success'
         ]);
     }

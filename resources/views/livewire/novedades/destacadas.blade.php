@@ -17,7 +17,7 @@
                     <a href="/novedades/{{ $nov->id }}"
                        class="block rounded-[4px] border border-[#DDDDE0] w-full bg-white rounded-[4px] overflow-hidden cursor-pointer group max-[991px]:h-[500px] max-[767px]:h-[480px] max-[639px]:h-auto">
 
-                        <div class="w-full h-[363px] overflow-hidden max-[991px]:h-[260px] max-[767px]:h-[240px] max-[639px]:h-[220px]">
+                        <div class="w-full h-[263px] overflow-hidden max-[991px]:h-[260px] max-[767px]:h-[240px] max-[639px]:h-[220px]">
                             <img src="{{ Storage::url($nov->image) }}"
                                  alt="{{ $nov->title }}"
                                  loading="lazy"
@@ -26,7 +26,7 @@
 
                         <div class="flex flex-col  px-[16px] pb-[12px] justify-between h-[243px] max-[991px]:h-[240px] max-[767px]:h-[240px] max-[639px]:h-auto max-[639px]:p-4">
                             <div>
-                                <p class="text-[#E40044] font-inter text-[14px] font-bold leading-[22px] mb-[10px] mt-[21px] max-[767px]:text-[15px] max-[639px]:text-[14px] max-[639px]:mt-0">
+                                <p class="text-[#E40044] font-inter text-[14px] font-bold leading-[22px] mb-[10px] mt-[18px] max-[767px]:text-[15px] max-[639px]:text-[14px] max-[639px]:mt-0">
                                     {{ $nov->novcategories->first()->title ?? 'Novedad' }}
                                 </p>
 
@@ -48,8 +48,6 @@
                 @endforeach
             </div>
 
-            <div class="swiper-button-next novedades-destacadas-next"></div>
-            <div class="swiper-button-prev novedades-destacadas-prev"></div>
         </div>
         @else
         <p class="text-gray-500 text-center py-8">No hay novedades destacadas disponibles.</p>

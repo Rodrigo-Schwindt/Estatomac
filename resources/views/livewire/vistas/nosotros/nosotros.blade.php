@@ -66,7 +66,7 @@
     
         <div class="max-w-[1224px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-[24px] min-h-[288px]">
     
-            <div class="px-[25px] pt-[61px] min-h-[392px] flex flex-col bg-white rounded-[20px] items-center   animate-card-1 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            <div class="px-[25px] pt-[61px] min-h-[392px] flex flex-col bg-white rounded-[20px] items-center   animate-card-1   transition-all duration-300">
                 <div class='w-[60px] h-[60px] rounded-[100px] bg-white flex items-center justify-center'>
                     @if($nosotros->image_1)
                         <img src="{{ asset('storage/' . $nosotros->image_1) }}"
@@ -82,7 +82,7 @@
                 </div>
             </div>
     
-            <div class="px-[25px] pt-[61px] min-w-[392px] flex flex-col items-center bg-white rounded-[20px]  animate-card-2 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            <div class="px-[25px] pt-[61px] min-w-[392px] flex flex-col items-center bg-white rounded-[20px]  animate-card-2   transition-all duration-300">
                 <div class='w-[60px] h-[60px] rounded-[100px] bg-white flex items-center justify-center'>
                     @if($nosotros->image_2)
                         <img src="{{ asset('storage/' . $nosotros->image_2) }}"
@@ -99,7 +99,7 @@
                 </div>
             </div>
     
-            <div class="px-[25px] pt-[61px] min-w-[392px] flex flex-col items-center rounded-[20px] bg-white animate-card-3 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            <div class="px-[25px] pt-[61px] min-w-[392px] flex flex-col items-center rounded-[20px] bg-white animate-card-3  transition-all duration-300">
                 <div class='w-[60px] h-[60px] rounded-[100px] bg-white flex items-center justify-center'>
                     @if($nosotros->image_3)
                         <img src="{{ asset('storage/' . $nosotros->image_3) }}"
