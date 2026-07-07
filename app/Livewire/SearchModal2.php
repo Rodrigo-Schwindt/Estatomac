@@ -3,17 +3,14 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-use App\Models\Product;
-use Illuminate\Support\Collection;
+use App\Models\Producto;
 
 class SearchModal2 extends Component
 {
     public bool $isOpen = false;
     public string $search = '';
     public bool $isSearching = false;
-    public Collection $results;
-
-    protected $listeners = ['close-search' => 'closeSearch'];
+    public $results;
 
     public function mount()
     {
@@ -21,33 +18,31 @@ class SearchModal2 extends Component
     }
 
     public function updatedSearch()
-{
-    if (strlen($this->search) < 2) {
-        $this->results = collect();
+    {
+        if (strlen($this->search) < 2) {
+            $this->results = collect();
+            $this->isSearching = false;
+            return;
+        }
+
+        $this->isSearching = true;
+        
+        $this->results = Producto::with(['categoria'])
+            ->where('visible', true)
+            ->where(function($query) {
+                $query->where('title', 'like', '%' . $this->search . '%')
+                      ->orWhere('code', 'like', '%' . $this->search . '%')
+                      ->orWhereHas('categoria', function($subQuery) {
+                          $subQuery->where('title', 'like', '%' . $this->search . '%');
+                      });
+            })
+            ->orderBy('destacado', 'desc')
+            ->orderBy('order', 'asc')
+            ->limit(10)
+            ->get();
+
         $this->isSearching = false;
-        return;
     }
-
-    $this->isSearching = true;
-    
-    $this->results = Product::with(['category', 'images'])
-        ->where('visible', true)
-        ->where(function($query) {
-            $query->where('title', 'like', '%' . $this->search . '%')
-                  ->orWhere('ficha_tecnica', 'like', '%' . $this->search . '%');
-        })
-        ->orWhereHas('category', function($query) {
-            $query->where('title', 'like', '%' . $this->search . '%')
-                  ->where('visible', true);
-        })
-        ->orderBy('destacado', 'desc')
-        ->orderBy('orden', 'asc')
-        ->orderBy('title', 'asc')
-        ->limit(10)
-        ->get();
-
-    $this->isSearching = false;
-}
 
     public function toggleSearch()
     {

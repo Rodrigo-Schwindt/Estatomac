@@ -23,9 +23,10 @@ class SlidersEdit extends Controller
         $validated = $request->validate([
             'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,mp4,webm,ogg,mov,avi|max:102400',
             'title' => 'nullable|string|max:255',
-            'description' => 'nullable|string|max:1000',
+            'description' => 'nullable|string',
             'orden' => 'nullable|string|max:10|unique:sliders,orden,' . $slider->id,
             'url' => 'nullable|url|max:500',
+            'button_text' => 'nullable|string|max:100',
         ]);
 
         try {
@@ -43,6 +44,7 @@ class SlidersEdit extends Controller
                 'orden' => strtoupper($validated['orden']),
                 'image' => $validated['image'] ?? $slider->image,
                 'url' => $validated['url'] ?? null,
+                'button_text' => $validated['button_text'] ?? null,
             ]);
 
             return response()->json([

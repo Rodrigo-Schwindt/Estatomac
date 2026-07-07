@@ -100,6 +100,6 @@ class NovedadDetalle extends Component
             'categories' => $categories,
             'archive'    => $archive,
             'novedades'  => $novedades,
-        ]);
+        ])->with('novedad', $this->novedad);
     }
 }

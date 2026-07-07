@@ -22,7 +22,8 @@ class SlidersCreate extends Controller
             'title' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:1000',
             'orden' => 'nullable|string|max:10|unique:sliders',
-            'url' => 'nullable|url|max:5000',  
+            'url' => 'nullable|url|max:5000',
+            'button_text' => 'nullable|string|max:100',
         ]);
 
         try {
@@ -51,7 +52,8 @@ class SlidersCreate extends Controller
                 'title' => $validated['title'],
                 'description' => $validated['description'] ?? null,
                 'orden' => strtoupper($orden),
-                'url' => $validated['url'] ?? null, 
+                'url' => $validated['url'] ?? null,
+                'button_text' => $validated['button_text'] ?? null,
             ]);
 
             return response()->json([

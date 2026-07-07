@@ -33,53 +33,7 @@ $previews = [
           class="space-y-12">
         @csrf
 
-        <section class="space-y-8">
-            <h3 class="text-[24px] font-semibold text-slate-900">Banner</h3>
-        
-            <div>
-                <label class="block text-sm font-medium text-slate-900 mb-1">Título del Banner</label>
-                <input type="text"
-                       name="banner_title"
-                       value="{{ old('banner_title', $banner->title ?? '') }}"
-                       class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none">
-            </div>
-        
-            <div class="space-y-2">
-                <h4 class="text-sm font-medium text-slate-900">Imagen del Banner</h4>
-        
-                @if($previews['banner_image'])
-                    <img id="preview-banner_image"
-                         src="{{ $previews['banner_image'] }}"
-                         class="w-full max-h-64 object-cover rounded-md border border-slate-200">
-                @else
-                    <div id="placeholder-banner_image"
-                         class="h-32 w-full max-w-xs bg-slate-100 border-2 border-dashed border-slate-300 rounded-md flex items-center justify-center text-slate-500 text-sm">
-                        Sin imagen
-                    </div>
-                    <img id="preview-banner_image" class="hidden w-full max-h-64 object-cover rounded-md border border-slate-200">
-                @endif
-        
-                <div class="flex gap-2">
-                    <input id="file-banner_image" type="file" name="banner_image" accept="image/*" class="hidden">
-        
-                    <button type="button"
-                            onclick="document.getElementById('file-banner_image').click()"
-                            class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition cursor-pointer">
-                        {{ $previews['banner_image'] ? 'Cambiar Imagen' : 'Subir Imagen' }}
-                    </button>
-        
-                    @if($previews['banner_image'] && $banner)
-                        <button type="button"
-                                onclick="deleteImage('banner_image')"
-                                class="px-4 py-2 bg-red-600 text-white rounded-md text-sm hover:bg-red-700 transition cursor-pointer">
-                            Eliminar
-                        </button>
-                    @endif
-                </div>
-        
-                <p class="text-xs text-slate-500 mt-2">Recomendado 1360×450px • JPG / PNG / WEBP • Máx 3MB.</p>
-            </div>
-        </section>
+       
 
         <section class="space-y-8">
 
@@ -241,6 +195,7 @@ function deleteImage(field) {
 
 function setupImagePreview(inputId, imgId, placeholderId) {
     const fileInput = document.getElementById(inputId);
+    if (!fileInput) return;
     const previewImg = document.getElementById(imgId);
     const placeholder = document.getElementById(placeholderId);
 
@@ -256,19 +211,26 @@ function setupImagePreview(inputId, imgId, placeholderId) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    setupImagePreview('file-banner_image', 'preview-banner_image', 'placeholder-banner_image');
     setupImagePreview('file-image', 'preview-image', 'placeholder-image');
     setupImagePreview('file-image_1', 'preview-image_1', 'placeholder-image_1');
     setupImagePreview('file-image_2', 'preview-image_2', 'placeholder-image_2');
     setupImagePreview('file-image_3', 'preview-image_3', 'placeholder-image_3');
 
+    const editors = {};
+    const editorIds = ['description', 'description_1', 'description_2', 'description_3'];
+    editorIds.forEach(id => {
+        const el = document.querySelector('#' + id);
+        if (el) {
+            ClassicEditor.create(el).then(e => editors[id] = e).catch(console.error);
+        }
+    });
 
-    ClassicEditor.create(document.querySelector('#description'));
-    ClassicEditor.create(document.querySelector('#description_1'));
-    ClassicEditor.create(document.querySelector('#description_2'));
-    ClassicEditor.create(document.querySelector('#description_3'));
-    ClassicEditor.create(document.querySelector('#description_4'));
-
+    document.querySelector('form').addEventListener('submit', function () {
+        Object.keys(editors).forEach(id => {
+            const textarea = document.getElementById(id);
+            if (textarea) textarea.value = editors[id].getData();
+        });
+    });
 });
 </script>
 

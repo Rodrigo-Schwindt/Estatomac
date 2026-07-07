@@ -7,7 +7,7 @@ use App\Models\Nosotros;
 use App\Models\Banner;
 use Livewire\Attributes\Layout;
 
-#[Layout('layouts.public')]
+#[Layout('layouts.public2')]
 class NosotrosPage extends Component
 {
     public $nosotros;

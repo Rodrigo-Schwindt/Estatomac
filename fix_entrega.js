@@ -1,0 +1,57 @@
+const fs = require('fs');
+const file = 'c:/Users/SENSEI/Downloads/todo/todotex/resources/views/livewire/zona/carrito-zona.blade.php';
+let content = fs.readFileSync(file, 'utf8');
+
+// Find and replace the old hardcoded Entrega section
+// Identify by unique marker: the h3 "Entrega" heading inside border div
+const startMarker = '                    <div class="border border-gray-200 mb-[26px]">\n                        <div class="bg-white text-black px-[20px] sm:px-[26px] h-[56px] flex items-center rounded-t-[4px]">\n                            <h3 class="font-semibold border-b border-gray-200 text-[20px] pt-[18px] w-full pb-[15px] sm:text-[18px] font-semibold">Entrega</h3>';
+const endMarker = '                    </div>\n                    <div class="border border-gray-200 mb-[26px]">\n                        <div class="bg-white text-black px-[20px] sm:px-[26px] h-[56px] flex items-center rounded-t-[4px]">\n                            <h3 class="font-semibold border-b border-gray-200 text-[20px] pt-[18px] w-full pb-[15px] sm:text-[18px] font-semibold">Formas de pago</h3>';
+
+const startIdx = content.indexOf(startMarker);
+if (startIdx === -1) { console.log('START NOT FOUND'); process.exit(1); }
+
+const endIdx = content.indexOf(endMarker);
+if (endIdx === -1) { console.log('END NOT FOUND'); process.exit(1); }
+
+// The section to replace is from startIdx to endIdx (not including the endMarker which starts the next section)
+const oldSection = content.substring(startIdx, endIdx + '                    </div>\n'.length);
+
+const newSection = `                    <div class="border border-gray-200 mb-[26px]">
+                        <div class="bg-white text-black px-[20px] sm:px-[26px] h-[56px] flex items-center rounded-t-[4px]">
+                            <h3 class="font-semibold border-b border-gray-200 text-[20px] pt-[18px] w-full pb-[15px] sm:text-[18px] font-semibold">Entrega</h3>
+                        </div>
+                        <div class="bg-white px-[20px] sm:px-[24px] py-[18px] rounded-b-[4px] space-y-3">
+                            @php
+                                $opcionesEntrega = [
+                                    'entrega_1' => ['label' => $config->entrega_1_label ?? 'Retiro cliente',        'costo' => floatval($config->entrega_1_costo ?? 0)],
+                                    'entrega_2' => ['label' => $config->entrega_2_label ?? 'Reparto TodoTex',       'costo' => floatval($config->entrega_2_costo ?? 0)],
+                                    'entrega_3' => ['label' => $config->entrega_3_label ?? 'Transporte / Expreso',  'costo' => floatval($config->entrega_3_costo ?? 0)],
+                                ];
+                            @endphp
+                            @foreach($opcionesEntrega as $valor => $opcion)
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <div class="flex items-center gap-[14px] sm:gap-[21px]">
+                                    <input
+                                        type="radio"
+                                        name="forma_entrega"
+                                        value="{{ $valor }}"
+                                        wire:model.live="formEntrega"
+                                        class="w-[18px] h-[18px] sm:w-[20px] sm:h-[20px] text-[#23378C] focus:ring-[#23378C] flex-shrink-0"
+                                        {{ $loop->first ? 'required' : '' }}
+                                    >
+                                    <span class="text-black font-inter text-[14px] sm:text-[16px] font-normal leading-normal">{{ $opcion['label'] }}</span>
+                                </div>
+                                @if($opcion['costo'] > 0)
+                                    <span class="text-black text-right font-inter text-[13px] sm:text-[16px] font-normal leading-normal whitespace-nowrap ml-2">${{ number_format($opcion['costo'], 2, ',', '.') }}</span>
+                                @else
+                                    <span class="text-[#308C05] text-right font-inter text-[13px] sm:text-[16px] font-normal leading-normal whitespace-nowrap ml-2">Sin costo</span>
+                                @endif
+                            </label>
+                            @endforeach
+                        </div>
+                    </div>
+`;
+
+content = content.substring(0, startIdx) + newSection + content.substring(startIdx + oldSection.length);
+fs.writeFileSync(file, content);
+console.log('OK - entrega section replaced');

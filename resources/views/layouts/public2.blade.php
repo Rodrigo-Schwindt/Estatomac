@@ -3,17 +3,57 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Estatomac | Fabricación y Mecanizado de Autopartes de Alta Precisión</title>
+        @php
+        $currentRoute = request()->route()?->getName();
+        $metadata = null;
+        $pageTitle = 'Todotex';
+
+        if ($currentRoute === 'home') {
+            $metadata = \App\Models\Metadata::getForSection('home');
+            $pageTitle = 'Todotex | Inicio';
+        } elseif ($currentRoute === 'nosotros') {
+            $metadata = \App\Models\Metadata::getForSection('nosotros');
+            $pageTitle = 'Nosotros | Todotex';
+        } elseif (in_array($currentRoute, ['productos', 'productos.categoria'])) {
+            $metadata = \App\Models\Metadata::getForSection('productos');
+            $pageTitle = 'Productos | Todotex';
+        } elseif ($currentRoute === 'productos.detalle') {
+            $productId = request()->route('id');
+            $metadata = \App\Models\Metadata::getForProduct($productId);
+            if (!$metadata) $metadata = \App\Models\Metadata::getForSection('productos');
+            $prod = \App\Models\ProductoTodotex::find($productId);
+            $pageTitle = ($prod ? $prod->titulo : 'Producto') . ' | Todotex';
+        } elseif ($currentRoute === 'novedades.public') {
+            $metadata = \App\Models\Metadata::getForSection('novedades');
+            $pageTitle = 'Novedades | Todotex';
+        } elseif ($currentRoute === 'novedad.detalle') {
+            $novedadId = request()->route('id');
+            $metadata = \App\Models\Metadata::getForNovedad($novedadId);
+            $nov = \App\Models\Novedades::find($novedadId);
+            $pageTitle = ($nov ? $nov->title : 'Novedad') . ' | Todotex';
+        } elseif ($currentRoute === 'contacto') {
+            $metadata = \App\Models\Metadata::getForSection('contacto');
+            $pageTitle = 'Contacto | Todotex';
+        }
+        @endphp
+
+        <title>{{ $pageTitle }}</title>
+
+        @if($metadata)
+            <meta name="description" content="{{ $metadata->description }}">
+            <meta name="keywords" content="{{ $metadata->keywords }}">
+        @else
+            <meta name="description" content="Todotex - Productos de limpieza y mantenimiento">
+            <meta name="keywords" content="todotex, limpieza, mantenimiento, productos">
+        @endif
 
         <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
         
-
         <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-        
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
@@ -94,95 +134,357 @@
                 transform: rotate(-45deg) translateY(-8px);
             }
             
-.nav-link {
-    font-weight: 400;
-    transition: all 0.2s ease;
-}
+            .nav-link {
+                font-weight: 400;
+                transition: all 0.2s ease;
+            }
 
-
-.nav-link.active {
-    font-weight: 700;
-    color:white;
-}
+            .nav-link.active {
+                font-weight: 700;
+                color: dark;
+            }
         </style>
     </head>
     <body class="bg-white text-[#1b1b18]">
+        <div 
+    x-data="{ 
+        show: false, 
+        message: '',
+        type: 'success',
+        progress: 100,
+        duration: 5000,
+        progressInterval: null,
+        init() {
+            // Listener para eventos desde Livewire
+            Livewire.on('show-toast', (data) => {
+                const payload = Array.isArray(data) ? data[0] : data;
+                this.lanzarToast(
+                    payload.message || 'Operación exitosa', 
+                    payload.type || 'success',
+                    payload.duration || 5000
+                );
+            });
+        },
+        lanzarToast(msg, tipo, dur) {
+            this.message = msg;
+            this.type = tipo;
+            this.duration = dur;
+            this.show = true;
+            this.animarProgreso();
+        },
+        animarProgreso() {
+            this.progress = 100;
+            if (this.progressInterval) clearInterval(this.progressInterval);
+            
+            const step = 100 / (this.duration / 100);
+            this.progressInterval = setInterval(() => {
+                this.progress -= step;
+                if (this.progress <= 0) {
+                    clearInterval(this.progressInterval);
+                }
+            }, 100);
+            
+            setTimeout(() => { 
+                this.show = false;
+                clearInterval(this.progressInterval);
+            }, this.duration);
+        }
+    }"
+    x-cloak
+    x-show="show"
+    x-transition:enter="transition ease-out duration-300 transform"
+    x-transition:enter-start="translate-y-[-100%] opacity-0"
+    x-transition:enter-end="translate-y-0 opacity-100"
+    x-transition:leave="transition ease-in duration-200 transform"
+    x-transition:leave-start="translate-y-0 opacity-100"
+    x-transition:leave-end="translate-y-[-100%] opacity-0"
+    class="fixed top-4 left-1/2 transform -translate-x-1/2 z-[9999]"
+    style="display: none;"
+>
+    <div class="relative bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-white/50 backdrop-blur-xl overflow-hidden min-w-[320px] sm:min-w-[380px] max-w-[480px]">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-gray-200 to-gray-300">
+            <div 
+                class="h-full transition-all duration-100 ease-linear rounded-r-full"
+                :class="{
+                    'bg-gradient-to-r from-[#00C853] via-[#00E676] to-[#69F0AE]': type === 'success',
+                    'bg-gradient-to-r from-[#E40044] via-[#FF1744] to-[#F50057]': type === 'error',
+                    'bg-gradient-to-r from-[#2196F3] via-[#42A5F5] to-[#64B5F6]': type === 'info'
+                }"
+                :style="`width: ${progress}%`"
+            ></div>
+        </div>
+        
+        <div class="px-4 sm:px-5 py-4 flex items-center gap-3 sm:gap-4">
+            <div class="relative flex-shrink-0">
+                <div 
+                    class="absolute inset-0 rounded-2xl blur-md opacity-50 animate-pulse"
+                    :class="{
+                        'bg-gradient-to-br from-[#00C853] to-[#00A344]': type === 'success',
+                        'bg-gradient-to-br from-[#E40044] to-[#B30034]': type === 'error',
+                        'bg-gradient-to-br from-[#2196F3] to-[#1976D2]': type === 'info'
+                    }"
+                ></div>
+                <div 
+                    class="relative w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform"
+                    :class="{
+                        'bg-gradient-to-br from-[#00C853] via-[#00E676] to-[#69F0AE]': type === 'success',
+                        'bg-gradient-to-br from-[#E40044] via-[#FF1744] to-[#F50057]': type === 'error',
+                        'bg-gradient-to-br from-[#2196F3] via-[#42A5F5] to-[#64B5F6]': type === 'info'
+                    }"
+                >
+                    <svg x-show="type === 'success'" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-md">
+                        <path d="M20 6L9 17L4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    
+                    <svg x-show="type === 'error'" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-md">
+                        <path d="M18 6L6 18M6 6L18 18" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    
+                    <svg x-show="type === 'info'" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-md">
+                        <path d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="flex-1 pr-2 min-w-0">
+                <p 
+                    class="font-inter text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider mb-0.5"
+                    :class="{
+                        'text-[#00C853]': type === 'success',
+                        'text-[#E40044]': type === 'error',
+                        'text-[#2196F3]': type === 'info'
+                    }"
+                    x-text="type === 'success' ? 'Éxito' : (type === 'error' ? 'Error' : 'Información')"
+                ></p>
+                <p class="text-gray-900 font-inter text-[13px] sm:text-[15px] font-semibold leading-tight" x-text="message"></p>
+            </div>
+            
+            <div class="flex-shrink-0 relative hidden sm:block">
+                <div 
+                    class="absolute inset-0 rounded-xl blur-sm"
+                    :class="{
+                        'bg-[#00C853]/10': type === 'success',
+                        'bg-[#E40044]/10': type === 'error',
+                        'bg-[#2196F3]/10': type === 'info'
+                    }"
+                ></div>
+                <div 
+                    class="relative w-11 h-11 rounded-xl flex items-center justify-center shadow-md transform hover:scale-110 transition-transform cursor-pointer"
+                    :class="{
+                        'bg-gradient-to-br from-[#00C853] to-[#00A344]/20': type === 'success',
+                        'bg-gradient-to-br from-[#E40044] to-[#B30034]/20': type === 'error',
+                        'bg-gradient-to-br from-[#2196F3] to-[#1976D2]/20': type === 'info'
+                    }"
+                    @click="show = false"
+                >
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 6L6 18M6 6L18 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        
+        <div 
+            class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent to-transparent"
+            :class="{
+                'via-[#00C853]/30': type === 'success',
+                'via-[#E40044]/30': type === 'error',
+                'via-[#2196F3]/30': type === 'info'
+            }"
+        ></div>
+    </div>
+</div>
         @php
             $contactData = App\Models\Contact::first();
             $hasSocialMedia = $contactData && ($contactData->facebook || $contactData->insta || $contactData->linkedin || $contactData->youtube);
         @endphp
 
-<header 
-x-data="{ open: false }"
-class="items-center bg-white items-center flex z-50 w-full h-[100px]">
+        <header 
+            x-data="{ open: false }"
+            class="items-center bg-white items-center flex z-50 w-full h-[100px]">
 
-<div class="max-w-[1224px] mx-auto flex justify-between items-center w-full px-4 lg:px-0">
+            <div class="max-w-[1224px] mx-auto flex justify-between items-center w-full px-4 lg:px-0">
 
-    @if($contactData && $contactData->icono_1)
-    <a wire:navigate href="{{ url('/') }}" class="w-fit h-[58px] flex-shrink-0 cursor-pointer max-lg:w-40">
-        <img src="{{ Storage::url($contactData->icono_1) }}" class="w-full h-full object-contain">
-    </a>
-    @endif
+                @if($contactData && $contactData->icono_1)
+                <a wire:navigate href="{{ url('/') }}" class="w-fit h-[58px] flex-shrink-0 cursor-pointer max-lg:w-40">
+                    <img src="{{ Storage::url($contactData->icono_1) }}" class="w-full h-full object-contain">
+                </a>
+                @endif
 
-    <nav class="hidden lg:flex items-center">
-        <div class="flex h-[40px] py-2 gap-[16px] items-center">
-    
-            <a wire:navigate href="/nosotros"
-               class="nav-link {{ request()->is('nosotros') ? 'active' : '' }} text-[#222] font-montserrat text-[16px] relative">
-               Nosotros
-            </a>
-    
-            <a 
-               class="nav-link {{ request()->is('productos*') ? 'active' : '' }} text-[#222] font-montserrat text-[16px] relative">
-               Productos
-            </a>
-    
-            <a 
-               class="nav-link {{ request()->is('catalogos*') ? 'active' : '' }} text-[#222] font-montserrat text-[16px] relative">
-               Catálogos
-            </a>
-    
-            <a 
-               class="nav-link {{ request()->is('info-tecnica') ? 'active' : '' }} text-[#222] font-montserrat text-[16px] relative">
-               Info técnica
-            </a>
-            <a 
-               class="nav-link {{ request()->is('novedades') ? 'active' : '' }} text-[#222] font-montserrat text-[16px] relative">
-               Novedades
-            </a>
-    
-            <a
-               class="nav-link {{ request()->is('contacto') ? 'active' : '' }} text-[#222] font-montserrat text-[16px] relative">
-               Contacto
-            </a>
-    
-            <div class="ml-[28px]">
-                <livewire:search-modal2 />
+                <nav class="hidden lg:flex items-center">
+                    <div class="flex h-[40px] py-2 gap-[20px] items-center">
+                
+                        <a wire:navigate href="/nosotros"
+                           class="nav-link {{ request()->is('nosotros') ? 'active' : '' }} text-black font-inter text-[16px] font-normal leading-normal relative">
+                           Nosotros
+                        </a>
+                
+                     
+                     <a wire:navigate href="{{ route('productos') }}"
+                        class="nav-link {{ request()->is('productos*') ? 'active' : '' }} text-black font-inter text-[16px] font-normal leading-normal relative">
+                        Productos
+                     </a>
+             
+                
+                        <a wire:navigate href="/novedades"
+                            class="nav-link {{ request()->is('novedades') ? 'active' : '' }} text-black font-inter text-[16px] font-normal leading-normal relative">
+                            Novedades
+                        </a>
+                        
+                        <a wire:navigate href="/contacto"
+                            class="nav-link {{ request()->is('contacto') ? 'active' : '' }} text-black font-inter text-[16px] font-normal leading-normal relative">
+                            Contacto
+                        </a>
+
+                        
+                        
+                        
+                        
+                    </div>
+                </nav>
+                
+                @php
+                    $authUser = null;
+                    $authRole = null;
+                    if (Auth::guard('cliente')->check()) {
+                        $authUser = Auth::guard('cliente')->user();
+                        $authRole = 'cliente';
+                    } elseif (Auth::guard('vendedor')->check()) {
+                        $authUser = Auth::guard('vendedor')->user();
+                        $authRole = 'vendedor';
+                    }
+                @endphp
+
+                @isset($authUser)
+                <div class="relative flex-shrink-0" x-data="{ open: false }" @click.outside="open = false">
+                    <button @click="open = !open"
+                            class="flex items-center gap-2 px-4 h-[44px] rounded-[4px] border border-black font-inter text-[14px] font-normal text-black hover:bg-black hover:text-white transition-colors cursor-pointer select-none">
+                        <span class="max-w-[120px] truncate">{{ $authUser->nombre }}</span>
+                        <svg class="w-4 h-4 flex-shrink-0 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+
+                    <div x-show="open"
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 -translate-y-1"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100"
+                         x-transition:leave-end="opacity-0"
+                         class="absolute right-0 top-[calc(100%+8px)] z-50 w-[280px] bg-white rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.14)] border border-gray-100 overflow-hidden"
+                         style="display:none;">
+
+                        {{-- Header del dropdown --}}
+                        <div class="px-4 py-4 bg-gray-50 border-b border-gray-100">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-[#23378C] flex items-center justify-center flex-shrink-0">
+                                    <span class="text-white font-inter font-semibold text-[15px]">
+                                        {{ strtoupper(substr($authUser->nombre, 0, 1)) }}
+                                    </span>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="font-inter font-semibold text-[14px] text-gray-900 truncate">{{ $authUser->nombre }}</p>
+                                    @if($authUser->email)
+                                        <p class="font-inter text-[12px] text-gray-500 truncate">{{ $authUser->email }}</p>
+                                    @endif
+                                    <span class="inline-block mt-0.5 text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full
+                                        {{ $authRole === 'vendedor' ? 'bg-[#23378C]/10 text-[#23378C]' : 'bg-green-100 text-green-700' }}">
+                                        {{ $authRole === 'vendedor' ? 'Vendedor' : 'Cliente' }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            @if($authRole === 'vendedor')
+                                <div class="mt-3 space-y-1.5 text-[12px] text-gray-600">
+                                    @if($authUser->telefono)
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                            </svg>
+                                            <span>{{ $authUser->telefono }}</span>
+                                        </div>
+                                    @endif
+                                    @if($authUser->celular)
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                            </svg>
+                                            <span>{{ $authUser->celular }}</span>
+                                        </div>
+                                    @endif
+                                    @if($authUser->comision > 0)
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+                                            </svg>
+                                            <span>Comisión: {{ number_format($authUser->comision, 1) }}%</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+
+                        {{-- Acciones --}}
+                        <div class="py-1">
+                            <a href="{{ route('cliente.productos') }}"
+                               class="flex items-center gap-3 px-4 py-2.5 text-[13px] font-inter text-gray-700 hover:bg-gray-50 transition-colors">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                </svg>
+                                Ir a Zona Privada
+                            </a>
+
+                            <div class="border-t border-gray-100 mt-1 pt-1">
+                                @if($authRole === 'vendedor')
+                                    <form method="POST" action="{{ route('cliente.vendedor.logout') }}">
+                                        @csrf
+                                        <button type="submit"
+                                                class="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-inter text-red-600 hover:bg-red-50 transition-colors cursor-pointer">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                            </svg>
+                                            Cerrar sesión
+                                        </button>
+                                    </form>
+                                @else
+                                    <form method="POST" action="{{ route('cliente.logout') }}">
+                                        @csrf
+                                        <button type="submit"
+                                                class="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-inter text-red-600 hover:bg-red-50 transition-colors cursor-pointer">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                            </svg>
+                                            Cerrar sesión
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @else
+                <livewire:auth.login-modal />
+                @endisset
+              
+
+                <button id="hamburger-btn"
+                    @click="open = true"
+                    class="lg:hidden flex flex-col justify-center items-end gap-[6px] w-[38px] h-[38px] z-[60]">
+                    <span class="hamburger-line block w-8 h-[3px] bg-[#BA2025] rounded"></span>
+                    <span class="hamburger-line block w-6 h-[3px] bg-[#BA2025] rounded"></span>
+                    <span class="hamburger-line block w-8 h-[3px] bg-[#BA2025] rounded"></span>
+                </button>
             </div>
-        </div>
-    </nav>
-    <div class="lg:hidden ml-[60px]">
-        <livewire:search-modal2 />
-    </div>
-    <button id="hamburger-btn"
-    @click="open = true"
-    class="lg:hidden flex flex-col justify-center items-end gap-[6px] w-[38px] h-[38px] z-[60]">
 
-<span class="hamburger-line block w-8 h-[3px] bg-[#BA2025] rounded"></span>
-<span class="hamburger-line block w-6 h-[3px] bg-[#BA2025] rounded"></span>
-<span class="hamburger-line block w-8 h-[3px] bg-[#BA2025] rounded"></span>
+            <div
+                x-show="open"
+                x-transition.opacity
+                @click="open = false"
+                class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[98] lg:hidden">
+            </div>
 
-</button>
-</div>
-
-<div 
-    x-show="open"
-    x-transition.opacity
-    @click="open = false"
-    class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[98] lg:hidden">
-</div>
-
-<aside 
+            <aside 
     x-show="open"
     x-transition:enter="transition ease-out duration-300"
     x-transition:enter-start="translate-x-full opacity-0"
@@ -213,7 +515,7 @@ class="items-center bg-white items-center flex z-50 w-full h-[100px]">
 
     <nav class="px-6 py-6 space-y-2">
         <a wire:navigate 
-           
+           href="/nosotros"
            @click="open = false"
            class="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all
                   {{ request()->is('nosotros') 
@@ -226,46 +528,20 @@ class="items-center bg-white items-center flex z-50 w-full h-[100px]">
         </a>
 
         <a wire:navigate 
-          
+           href="/productos"
            @click="open = false"
            class="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all
-                  {{ request()->is('categorias*') 
+                  {{ request()->is('productos*') 
                       ? 'bg-[#BA2025] text-white shadow-md' 
                       : 'text-gray-700 hover:bg-gray-50 hover:text-[#BA2025]' }}">
-            <svg class="w-5 h-5 {{ request()->is('categorias*') ? '' : 'text-gray-400 group-hover:text-[#BA2025]' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 {{ request()->is('productos*') ? '' : 'text-gray-400 group-hover:text-[#BA2025]' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
             </svg>
             <span class="font-montserrat text-[16px] font-medium">Productos</span>
         </a>
 
         <a wire:navigate 
-           
-           @click="open = false"
-           class="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all
-                  {{ request()->is('catalogos*') 
-                      ? 'bg-[#BA2025] text-white shadow-md' 
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-[#BA2025]' }}">
-            <svg class="w-5 h-5 {{ request()->is('catalogos*') ? '' : 'text-gray-400 group-hover:text-[#BA2025]' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-            </svg>
-            <span class="font-montserrat text-[16px] font-medium">Catálogos</span>
-        </a>
-
-        <a wire:navigate 
-           
-           @click="open = false"
-           class="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all
-                  {{ request()->is('info-tecnica*') 
-                      ? 'bg-[#BA2025] text-white shadow-md' 
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-[#BA2025]' }}">
-            <svg class="w-5 h-5 {{ request()->is('info-tecnica*') ? '' : 'text-gray-400 group-hover:text-[#BA2025]' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-            <span class="font-montserrat text-[16px] font-medium">Info técnica</span>
-        </a>
-
-        <a wire:navigate 
-           
+           href="/novedades"
            @click="open = false"
            class="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all
                   {{ request()->is('novedades*') 
@@ -278,7 +554,7 @@ class="items-center bg-white items-center flex z-50 w-full h-[100px]">
         </a>
 
         <a wire:navigate 
-          
+           href="/contacto"
            @click="open = false"
            class="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all
                   {{ request()->is('contacto*') 
@@ -289,6 +565,46 @@ class="items-center bg-white items-center flex z-50 w-full h-[100px]">
             </svg>
             <span class="font-montserrat text-[16px] font-medium">Contacto</span>
         </a>
+
+        @isset($authUser)
+        <a href="{{ route('cliente.productos') }}"
+           @click="open = false"
+           class="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-gray-700 hover:bg-gray-50 hover:text-[#BA2025]">
+            <div class="w-8 h-8 rounded-full bg-[#23378C] flex items-center justify-center flex-shrink-0">
+                <span class="text-white font-semibold text-[13px]">{{ strtoupper(substr($authUser->nombre, 0, 1)) }}</span>
+            </div>
+            <div class="min-w-0">
+                <p class="font-montserrat text-[15px] font-semibold truncate">{{ $authUser->nombre }}</p>
+                <p class="font-montserrat text-[12px] text-gray-400">{{ isset($authRole) && $authRole === 'vendedor' ? 'Vendedor' : 'Cliente' }}</p>
+            </div>
+        </a>
+
+        @if(isset($authRole) && $authRole === 'vendedor')
+            <form method="POST" action="{{ route('cliente.vendedor.logout') }}" class="px-4 pt-1">
+                @csrf
+                <button type="submit" class="w-full flex items-center gap-3 py-2.5 text-[14px] font-montserrat text-red-500 hover:text-red-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    Cerrar sesión
+                </button>
+            </form>
+        @else
+            <form method="POST" action="{{ route('cliente.logout') }}" class="px-4 pt-1">
+                @csrf
+                <button type="submit" class="w-full flex items-center gap-3 py-2.5 text-[14px] font-montserrat text-red-500 hover:text-red-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    Cerrar sesión
+                </button>
+            </form>
+        @endif
+        @else
+        <div class="px-4 py-3">
+            <livewire:auth.login-modal />
+        </div>
+        @endisset
     </nav>
 
     <div class="px-6 pb-6">
@@ -369,92 +685,73 @@ class="items-center bg-white items-center flex z-50 w-full h-[100px]">
 
 </aside>
 
-<style>
-@keyframes slideInRight {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-@keyframes slideOutRight {
-    from {
-        transform: translateX(0);
-        opacity: 1;
-    }
-    to {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-}
-</style>
-
-</header>
-
+        </header>
 
         <main class="min-h-screen">
             {{ $slot }}
         </main>
-            @if($contactData && $contactData->wssp)
-    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $contactData->wssp) }}" 
-       target="_blank"
-       style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;"
-       title="Contactar por WhatsApp">
-        <div style="position: relative; width: 64px; height: 64px;">
-            <div style="width: 64px; height: 64px; background-color: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4); cursor: pointer; transition: all 0.3s ease;">
-                <svg style="width: 36px; height: 36px; color: white;" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                </svg>
+
+        @if($contactData && $contactData->wssp)
+        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $contactData->wssp) }}" 
+           target="_blank"
+           style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;"
+           title="Contactar por WhatsApp">
+            <div style="position: relative; width: 64px; height: 64px;">
+                <div style="width: 64px; height: 64px; background-color: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4); cursor: pointer; transition: all 0.3s ease;">
+                    <svg style="width: 36px; height: 36px; color: white;" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                    </svg>
+                </div>
+                
+                <div style="position: absolute; top: 0; left: 0; width: 64px; height: 64px; background-color: #25D366; border-radius: 50%; animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; opacity: 0.2; pointer-events: none;"></div>
             </div>
+        </a>
+
+        <style>
+            @keyframes pulse {
+                0%, 100% {
+                    opacity: 0.2;
+                    transform: scale(1);
+                }
+                50% {
+                    opacity: 0;
+                    transform: scale(1.5);
+                }
+            }
             
-            <div style="position: absolute; top: 0; left: 0; width: 64px; height: 64px; background-color: #25D366; border-radius: 50%; animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; opacity: 0.2; pointer-events: none;"></div>
+            a[title="Contactar por WhatsApp"]:hover div > div {
+                transform: scale(1.1);
+                box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
+            }
+        </style>
+        @endif
+
+        @livewire('footer') 
+
+        <div 
+            x-data="{ show: false, message: '', type: '' }"
+            @show-toast.window="
+                message = $event.detail.message;
+                type = $event.detail.type ?? 'success';
+                show = true;
+                setTimeout(() => show = false, 4000);
+            "
+            x-show="show"
+            x-transition
+            class="fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg text-white z-[9999]"
+            :class="type === 'success' ? 'bg-green-600' : 'bg-red-600'"
+        >
+            <span x-text="message"></span>
         </div>
-    </a>
 
-     
-    
-    <style>
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 0.2;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0;
-                transform: scale(1.5);
-            }
-        }
-        
-        a[title="Contactar por WhatsApp"]:hover div > div {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
-        }
-    </style>
-    @endif
-
-     @livewire('footer') 
-
-     <div 
-     x-data="{ show: false, message: '', type: '' }"
-     @show-toast.window="
-         message = $event.detail.message;
-         type = $event.detail.type ?? 'success';
-         show = true;
-         setTimeout(() => show = false, 4000);
-     "
-     x-show="show"
-     x-transition
-     class="fixed top-0 right-0 px-4 py-3 rounded-lg shadow-lg text-white z-[9999]"
-     :class="type === 'success' ? 'bg-green-600' : 'bg-red-600'"
- >
-     <span x-text="message"></span>
- </div>
- 
-
+        {{-- Script para abrir modal de login automáticamente --}}
+        @if(session('openLoginModal'))
+        <script>
+            document.addEventListener('livewire:init', () => {
+                Livewire.dispatch('open-login');
+            });
+        </script>
+        @endif
 
         <script>
             document.addEventListener('keydown', function(e) {

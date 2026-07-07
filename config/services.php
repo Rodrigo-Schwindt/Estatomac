@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'erp' => [
+        'api_key'           => env('ERP_API_KEY', ''),
+        'auth_enabled'      => env('ERP_API_AUTH_ENABLED', true),
+        'ftp_in_path'       => env('ERP_FTP_IN_PATH'),       // Donde Walter sube los .zip
+        'ftp_processed_path' => env('ERP_FTP_PROCESSED_PATH'), // Donde el sistema mueve los procesados
+    ],
+
 ];

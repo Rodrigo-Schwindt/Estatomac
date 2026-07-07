@@ -1,23 +1,30 @@
-<section class="bg-white w-full pt-[90px] pb-[72px] max-[1199px]:pt-[60px] max-[1199px]:pb-[80px] max-[767px]:pt-[0px] max-[767px]:pb-[60px]">
+<section class="bg-white w-full pt-[90px] pb-[72px] max-[1199px]:pt-[60px] max-[1199px]:pb-[80px]  max-[767px]:pb-[60px] max-[480px]:pb-[48px]"
+    x-data="{ show: false }"
+    x-intersect.once.threshold.0.1="show = true">
     <div class="max-w-[1224px] mx-auto max-[1199px]:px-6 max-[767px]:px-4">
 
-        <div class="flex items-center justify-between mb-[24px] max-[767px]:flex-col max-[767px]:items-center max-[767px]:gap-4 max-[767px]:text-center">
+        <div class="flex items-center justify-between mb-[24px] max-[767px]:flex-col max-[767px]:items-center max-[767px]:gap-4 max-[767px]:text-center transition-all duration-700 ease-out transform"
+             :class="show ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'">
             <div class="max-[767px]:w-full max-[767px]:flex max-[767px]:flex-col max-[767px]:items-center">
-                <h2 class="text-[#111010] font-inter text-[32px] font-semibold leading-[28px] mb-[22px] max-[991px]:text-[36px] max-[767px]:text-[32px] max-[639px]:text-[28px]">
+                <h2 class="text-[#111010] font-inter text-[32px] font-semibold leading-[28px] mb-[22px] max-[991px]:text-[36px] max-[767px]:text-[32px] max-[639px]:text-[28px] max-[480px]:text-[25px] max-[480px]:leading-[31px]">
                     Novedades
                 </h2>
             </div>
         </div>
 
         @if($destacadas->count() > 0)
-        <div class="swiper novedadesDestacadasSwiper">
+        <div class="swiper novedadesDestacadasSwiper"
+             x-show="show"
+             x-transition:enter="transition ease-out duration-1000 delay-200"
+             x-transition:enter-start="opacity-0 translate-y-8"
+             x-transition:enter-end="opacity-100 translate-y-0">
             <div class="swiper-wrapper">
                 @foreach($destacadas as $nov)
                 <div class="swiper-slide">
                     <a href="/novedades/{{ $nov->id }}"
-                       class="block rounded-[4px] border border-[#DDDDE0] w-full bg-white rounded-[4px] overflow-hidden cursor-pointer group max-[991px]:h-[500px] max-[767px]:h-[480px] max-[639px]:h-auto">
+                       class="block rounded-[4px] border border-[#DDDDE0] w-full bg-white overflow-hidden cursor-pointer group max-[991px]:h-[500px] max-[767px]:h-[480px] max-[639px]:h-auto">
 
-                        <div class="w-full h-[363px] overflow-hidden max-[991px]:h-[260px] max-[767px]:h-[240px] max-[639px]:h-[220px]">
+                        <div class="w-full h-[263px] overflow-hidden max-[991px]:h-[260px] max-[767px]:h-[240px] max-[639px]:h-[220px] max-[480px]:h-[200px]">
                             <img src="{{ Storage::url($nov->image) }}"
                                  alt="{{ $nov->title }}"
                                  loading="lazy"
@@ -26,11 +33,11 @@
 
                         <div class="flex flex-col  px-[16px] pb-[12px] justify-between h-[243px] max-[991px]:h-[240px] max-[767px]:h-[240px] max-[639px]:h-auto max-[639px]:p-4">
                             <div>
-                                <p class="text-[#E40044] font-inter text-[14px] font-bold leading-[22px] mb-[10px] mt-[21px] max-[767px]:text-[15px] max-[639px]:text-[14px] max-[639px]:mt-0">
+                                <p class="text-[#23378C] uppercase font-inter text-[14px] font-bold leading-[22px] mb-[10px] mt-[18px] max-[767px]:text-[15px] max-[639px]:text-[14px] max-[639px]:mt-0">
                                     {{ $nov->novcategories->first()->title ?? 'Novedad' }}
                                 </p>
 
-                                <h3 class="text-black font-montserrat text-[24px] font-medium leading-[120%] mb-[6px] line-clamp-2 max-[991px]:text-[22px] max-[767px]:text-[20px] max-[639px]:text-[18px] max-[639px]:mb-3">
+                                <h3 class="text-black  group-hover:text-[#23378C] font-montserrat text-[21px] font-medium leading-[120%] mb-[6px] line-clamp-2 max-[991px]:text-[22px] max-[767px]:text-[20px] max-[639px]:text-[18px] max-[639px]:mb-3">
                                     {{ $nov->title }}
                                 </h3>
 
@@ -39,7 +46,7 @@
                                 </p>
                             </div>
                             
-                            <span class="text-black font-inter text-[16px] font-bold leading-normal hover:underline max-[767px]:text-[15px] max-[639px]:text-[14px] max-[639px]:mt-3">
+                            <span class="text-black  group-hover:text-[#23378C] font-inter text-[16px]  leading-normal hover:underline max-[767px]:text-[15px] max-[639px]:text-[14px] max-[639px]:mt-3">
                                 Leer más
                             </span>
                         </div>
@@ -48,8 +55,6 @@
                 @endforeach
             </div>
 
-            <div class="swiper-button-next novedades-destacadas-next"></div>
-            <div class="swiper-button-prev novedades-destacadas-prev"></div>
         </div>
         @else
         <p class="text-gray-500 text-center py-8">No hay novedades destacadas disponibles.</p>

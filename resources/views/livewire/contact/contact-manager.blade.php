@@ -6,53 +6,7 @@
 
     <form id="contact-form" enctype="multipart/form-data" class="space-y-8">
         @csrf
-        <section class="space-y-8">
-            <h3 class="text-[24px] font-semibold text-slate-900">Banner de Sección</h3>
-        
-            <div>
-                <label class="block text-sm font-medium text-slate-900 mb-1">Título del Banner</label>
-                <input type="text"
-                       name="banner_title"
-                       value="{{ old('banner_title', $banner->title ?? '') }}"
-                       class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none">
-            </div>
-        
-            <div class="space-y-2">
-                <h4 class="text-sm font-medium text-slate-900">Imagen del Banner</h4>
-        
-                @if($previews['banner_image'])
-                    <img id="preview-banner_image"
-                         src="{{ $previews['banner_image'] }}"
-                         class="w-full max-h-64 object-cover rounded-md border border-slate-200">
-                @else
-                    <div id="placeholder-banner_image"
-                         class="h-32 w-full max-w-xs bg-slate-100 border-2 border-dashed border-slate-300 rounded-md flex items-center justify-center text-slate-500 text-sm">
-                        Sin imagen
-                    </div>
-                    <img id="preview-banner_image" class="hidden w-full max-h-64 object-cover rounded-md border border-slate-200">
-                @endif
-        
-                <div class="flex gap-2">
-                    <input id="file-banner_image" type="file" name="banner_image" accept="image/*" class="hidden">
-        
-                    <button type="button"
-                            onclick="document.getElementById('file-banner_image').click()"
-                            class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition cursor-pointer">
-                        {{ $previews['banner_image'] ? 'Cambiar Imagen' : 'Subir Imagen' }}
-                    </button>
-        
-                    @if($previews['banner_image'] && $banner)
-                        <button type="button"
-                                onclick="deleteImage('banner_image')"
-                                class="px-4 py-2 bg-red-600 text-white rounded-md text-sm hover:bg-red-700 transition cursor-pointer">
-                            Eliminar
-                        </button>
-                    @endif
-                </div>
-        
-                <p class="text-xs text-slate-500 mt-2">Recomendado 1360×450px • JPG / PNG / WEBP • Máx 3MB.</p>
-            </div>
-        </section>
+
 
         <div class="bg-white shadow rounded-lg p-6">
             <h2 class="text-xl font-semibold text-gray-800 mb-6 pb-3 ">Información de Contacto</h2>
@@ -64,21 +18,15 @@
                            value="{{ $contact->direction_adm ?? '' }}"
                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Horarios</label>
-                    <input type="text" name="direction_sale"
-                           value="{{ $contact->direction_sale ?? '' }}"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">WhatsApp 1 (WhatsApp flotante)</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">WhatsApp  (WhatsApp flotante)</label>
                     <input type="text" name="wssp"
                            value="{{ $contact->wssp ?? '' }}"
                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">WhatsApp 2</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Telefono</label>
                     <input type="text" name="phone_amd"
                            value="{{ $contact->phone_amd ?? '' }}"
                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
@@ -204,7 +152,7 @@
         setTimeout(() => toast.remove(), 2500);
     }
     
-    document.getElementById('file-banner_image').addEventListener('change', e => {
+    document.getElementById('file-banner_image')?.addEventListener('change', e => {
         const file = e.target.files[0];
         if (!file) return;
         const preview = document.getElementById('preview-banner_image');
@@ -233,11 +181,14 @@
             headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" },
             body: formData
         })
-        .then(async res => {
-            const out = await res.text();
-            if (!res.ok) { console.error(out); showToast("Error al guardar", "error"); return; }
-            showToast("Datos guardados correctamente");
-            setTimeout(() => location.reload(), 1000);
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                showToast(data.message);
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showToast(data.message || "Error al guardar", "error");
+            }
         })
         .catch(() => showToast("Error de conexión", "error"));
     });

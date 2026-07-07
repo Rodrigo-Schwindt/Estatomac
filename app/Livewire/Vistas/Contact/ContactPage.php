@@ -8,7 +8,7 @@ use App\Models\Banner;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Attributes\Layout;
 
-#[Layout('layouts.public')]
+#[Layout('layouts.public2')]
 class ContactPage extends Component
 {
     public $contact;

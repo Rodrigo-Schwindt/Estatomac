@@ -6,54 +6,7 @@
 
     <div id="alert-success" class="hidden bg-green-100 border border-green-400 text-green-800 px-6 py-3 rounded-md mb-4"></div>
 
-    <section class="space-y-4">
-        <h3 class="text-xl font-semibold text-slate-900">Banner Principal</h3>
-        <p class="text-sm text-slate-600 italic">Imagen superior usada como portada.</p>
-
-        <div>
-            @if($banner && $banner->image_banner)
-                <img id="banner-preview"
-                     src="{{ Storage::url($banner->image_banner) }}"
-                     class="w-full max-h-64 object-cover rounded-md border border-slate-200">
-                <div id="banner-placeholder"
-                     class="hidden h-32 w-full max-w-xs bg-slate-100 border-2 border-dashed border-slate-300 rounded-md flex items-center justify-center text-slate-500 text-sm">
-                    Sin imagen
-                </div>
-            @else
-                <img id="banner-preview"
-                     class="hidden w-full max-h-64 object-cover rounded-md border border-slate-200">
-                <div id="banner-placeholder"
-                     class="h-32 w-full max-w-xs bg-slate-100 border-2 border-dashed border-slate-300 rounded-md flex items-center justify-center text-slate-500 text-sm">
-                    Sin imagen
-                </div>
-            @endif
-        </div>
-
-        <div class="flex flex-wrap gap-2">
-            <input id="file-image_banner" type="file" class="hidden" accept="image/*">
-
-            <button type="button"
-                    onclick="document.getElementById('file-image_banner').click()"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition cursor-pointer">
-                {{ $banner && $banner->image_banner ? 'Cambiar imagen' : 'Subir imagen' }}
-            </button>
-
-        </div>
-
-        <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-            Resolución recomendada: 1360×450px<br>
-            Peso recomendado: hasta 3MB<br>
-            Formatos permitidos: JPG, PNG, WEBP
-        </p>
-
-        <p id="banner-error" class="text-red-600 text-xs mt-1 hidden"></p>
-
-        <button id="btn-save-banner"
-                type="button"
-                class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm cursor-pointer mt-3 hidden">
-            Guardar Banner
-        </button>
-    </section>
+    
 
     <div class="flex justify-between items-center pb-4">
         <h2 class="text-2xl font-bold text-slate-900">Novedades (<span id="total-count">{{ $novedades->total() }}</span>)</h2>
@@ -132,7 +85,7 @@
                                 <a href="{{ route('novedades.edit', $nov->id) }}"
                                    class="text-slate-500 hover:text-blue-600 transition cursor-pointer"
                                    title="Editar">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
                                     </svg>
@@ -141,7 +94,7 @@
                                 <button data-id="{{ $nov->id }}"
                                         class="btn-delete text-red-600 hover:text-red-700 transition cursor-pointer"
                                         title="Eliminar">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6
                                             m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3H4"/>
@@ -215,8 +168,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (pageLink) {
             e.preventDefault();
             const page = pageLink.dataset.page;
-            currentPage = page;
-            loadTable(page);
+            currentPage = parseInt(page);
+            loadTable(currentPage);
         }
     });
 
@@ -283,7 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         bannerPreview.src = data.url;
                         bannerPreview.classList.remove("hidden");
                         bannerPlaceholder.classList.add("hidden");
-                        btnRemoveBanner.classList.remove("hidden");
+                        if (btnRemoveBanner) btnRemoveBanner.classList.remove("hidden");
                     }
                     bannerInput.value = "";
                     btnSaveBanner.classList.add("hidden");
@@ -322,21 +275,41 @@ document.addEventListener("DOMContentLoaded", () => {
         fetch(`{{ route('novedades.index') }}?page=${page}&search=${encodeURIComponent(search)}`, {
             headers: { "X-Requested-With": "XMLHttpRequest" }
         })
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) throw new Error('Network response was not ok');
+            return r.json();
+        })
         .then(data => {
-            document.getElementById("ajax-wrapper").innerHTML = data.html;
-            document.getElementById("total-count").innerText = data.total;
+            if (data.html) {
+                document.getElementById("ajax-wrapper").innerHTML = data.html;
+                
+                const totalCount = document.getElementById("total-count");
+                if (totalCount) {
+                    totalCount.innerText = data.total || 0;
+                }
 
-            const info = document.getElementById("pagination-info");
-            if (data.pages > 0) {
-                info.innerText = `Página ${page} de ${data.pages} · ${data.total} resultados`;
-            } else {
-                info.innerText = "No hay resultados disponibles";
+                const info = document.getElementById("pagination-info");
+                if (info) {
+                    if (data.pages > 0 && data.total > 0) {
+                        const showing = data.showing || `${data.from || 0}–${data.to || 0}`;
+                        info.innerText = `Página ${page} de ${data.pages} · Mostrando ${showing} de ${data.total}`;
+                    } else {
+                        info.innerText = "No hay resultados disponibles";
+                    }
+                }
             }
+        })
+        .catch(error => {
+            console.error('Error al cargar tabla:', error);
         });
     }
 
     function deleteNovedad(id) {
+        const row = document.querySelector(`.btn-delete[data-id="${id}"]`)?.closest('tr');
+        if (row) {
+            row.style.opacity = '0.5';
+        }
+
         fetch(`{{ url('/admin/novedades') }}/${id}`, {
             method: "DELETE",
             headers: {
@@ -344,12 +317,32 @@ document.addEventListener("DOMContentLoaded", () => {
                 "X-Requested-With": "XMLHttpRequest"
             }
         })
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) throw new Error('Network response was not ok');
+            return r.json();
+        })
         .then(data => {
             if (data.success) {
                 showSuccess(data.success);
+                
+                if (row) {
+                    row.remove();
+                }
+                
                 loadTable(currentPage);
+            } else {
+                if (row) {
+                    row.style.opacity = '1';
+                }
+                alert('Error al eliminar la novedad');
             }
+        })
+        .catch(error => {
+            console.error('Error al eliminar:', error);
+            if (row) {
+                row.style.opacity = '1';
+            }
+            alert('Error al eliminar la novedad');
         });
     }
 
@@ -361,12 +354,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 "X-Requested-With": "XMLHttpRequest"
             }
         })
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) throw new Error('Network response was not ok');
+            return r.json();
+        })
         .then(data => {
             if (data.success) {
                 showSuccess(data.success);
                 loadTable(currentPage);
             }
+        })
+        .catch(error => {
+            console.error('Error al cambiar destacado:', error);
         });
     }
 

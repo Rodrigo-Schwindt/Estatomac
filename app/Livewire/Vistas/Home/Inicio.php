@@ -5,12 +5,20 @@ namespace App\Livewire\Vistas\Home;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use App\Models\Sliders;
-use App\Models\Proceso;
+
 
 #[Layout('layouts.public2')]
 class Inicio extends Component
 {
     public $sliders;
+    public $search = '';
+    public $tipo = null;
+    public $categoriaId = null;
+    public $marcaId = null;
+    public $modeloId = null;
+    public $codigo = null;
+    public $equivalencia = null;
+    public $filtrosSubcategorias = [];
 
     public function mount()
     {
@@ -40,8 +48,33 @@ class Inicio extends Component
         return $mimeTypes[$extension] ?? 'video/mp4';
     }
 
+    public function updatedCategoriaId()
+    {
+        $this->filtrosSubcategorias = [];
+    }
+
+    public function updatedMarcaId()
+    {
+        $this->modeloId = null;
+    }
+
+    public function toggleTipo($valor)
+    {
+        if ($this->tipo === $valor) {
+            $this->tipo = null;
+        } else {
+            $this->tipo = $valor;
+        }
+    }
+
+
+
+  
     public function render()
     {
-        return view('livewire.vistas.home.inicio');
+  
+        return view('livewire.vistas.home.inicio', [
+
+        ]);
     }
 }

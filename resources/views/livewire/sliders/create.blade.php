@@ -65,21 +65,7 @@
                       placeholder="Descripción opcional"></textarea>
             <p id="description-error" class="mt-1 text-red-600 text-sm hidden"></p>
         </div>
-                <div>
-    <label class="block text-sm font-medium text-slate-900 mb-2">URL (opcional)</label>
 
-    <input type="url"
-           id="url"
-           name="url"
-           placeholder="https://tudominio.com/..."
-           class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none">
-
-    <p id="url-error" class="mt-1 text-red-600 text-sm hidden"></p>
-
-    <p class="text-xs text-slate-500 mt-1">
-        URL de destino del boton.
-    </p>
-</div>
 
         <div>
             <label class="block text-sm font-medium text-slate-900 mb-2">Orden *</label>
@@ -90,6 +76,26 @@
                    class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm bg-white font-mono tracking-wider uppercase focus:ring-2 focus:ring-blue-600 focus:outline-none">
             <p id="orden-error" class="mt-1 text-red-600 text-sm hidden"></p>
             <p class="text-xs text-slate-500 mt-1">Usa letras: AA, AB, AC... (orden alfabético)</p>
+        </div>
+
+        <div>
+            <label for="url" class="block text-sm font-medium text-slate-900 mb-2">Link (URL)</label>
+            <input type="url"
+                   id="url"
+                   name="url"
+                   placeholder="https://..."
+                   class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none">
+            <p id="url-error" class="mt-1 text-red-600 text-sm hidden"></p>
+        </div>
+
+        <div>
+            <label for="button_text" class="block text-sm font-medium text-slate-900 mb-2">Texto del botón</label>
+            <input type="text"
+                   id="button_text"
+                   name="button_text"
+                   placeholder="Ej: Ver más, Comprar, Contactar..."
+                   class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none">
+            <p id="button_text-error" class="mt-1 text-red-600 text-sm hidden"></p>
         </div>
 
         <div class="flex justify-end gap-3 pt-4 border-t border-slate-200">

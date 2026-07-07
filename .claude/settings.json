@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php artisan:*)",
+      "Bash(curl -s \"http://127.0.0.1:8000/api/erp/pedidos/00000003?format=xml\")",
+      "Bash(curl -s \"http://127.0.0.1:8000/api/erp/pedidos?limit=1&format=xml\")",
+      "Bash(curl -s \"http://127.0.0.1:8000/api/erp/pedidos?limit=2&format=xml\")"
+    ]
+  }
+}

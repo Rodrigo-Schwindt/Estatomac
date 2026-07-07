@@ -8,7 +8,7 @@ use App\Models\Novedades;
 use App\Models\NovCategories;
 use Livewire\Attributes\Layout;
 
-#[Layout('layouts.public')]
+#[Layout('layouts.public2')]
 class NovedadesPublic extends Component
 {
     use WithPagination;
@@ -18,6 +18,7 @@ class NovedadesPublic extends Component
     public $search = '';
     public $category = null;
     public $month = null; // formato "YYYY-MM"
+    public int $perPage = 6;
 
     protected $queryString = [
         'search'   => ['except' => ''],
@@ -62,9 +63,16 @@ class NovedadesPublic extends Component
        
     }
 
-    public function paginationView()
+    public function setPerPage(int $perPage)
     {
-        return 'components.pagination.novedades';
+        if (! in_array($perPage, [3, 6], true)) {
+            return;
+        }
+
+        if ($this->perPage !== $perPage) {
+            $this->perPage = $perPage;
+            $this->resetPage();
+        }
     }
 
     public function render()
@@ -83,7 +91,7 @@ class NovedadesPublic extends Component
             })
             ->orderBy('created_at', 'desc');
 
-        $novedades = $query->paginate(4);
+        $novedades = $query->paginate($this->perPage);
 
         $banner = Novedades::whereNotNull('image_banner')->first();
 

@@ -10,205 +10,154 @@
      x-transition:enter-start="opacity-0 transform -translate-y-4"
      x-transition:enter-end="opacity-100 transform translate-y-0">
 
-    <nav class="max-w-[1224px] mx-auto text-black font-montserrat text-[12px] leading-[150%] flex items-center gap-1 mt-[24px] max-[1199px]:px-4 max-[1199px]:flex-wrap">
-        <a wire:navigate href="{{ url('/') }}" class="text-black font-montserrat text-[12px] font-bold leading-[150%]">Inicio</a>
-        <span class="text-black font-montserrat text-[12px] leading-[150%]">›</span>
-        <a wire:navigate href="/novedades" class="text-black font-montserrat text-[12px] font-bold leading-[150%]">Novedades</a>
-        <span class="text-black font-montserrat text-[12px] leading-[150%]">›</span>
-        <span class="text-black font-montserrat text-[12px] leading-[150%]">{{ $novedad->title }}</span>
-    </nav>
+         <div class="bg-[#F5F5F5]  h-[150px]">
+        <div class="max-w-[1224px] mx-auto">
+                <div class=" max-[1199px]:px-4 ">
+            <div class="max-w-[1224px] mx-auto pt-[16px]">
+                <nav class="text-white font-montserrat text-[12px] max-[639px]:text-[11px] leading-[150%] flex items-center gap-1">
+        <a wire:navigate href="{{ url('/') }}" class="text-black font-montserrat text-[12px] max-[639px]:text-[11px] font-bold leading-[150%] transition-colors duration-200">Inicio</a>
+        <span class="text-black font-montserrat text-[12px] max-[639px]:text-[11px] leading-[150%]">|</span>
+        <a wire:navigate href="/novedades" class="text-black font-montserrat text-[12px] max-[639px]:text-[11px] font-bold leading-[150%] transition-colors duration-200">Novedades</a>
+        <span class="text-black font-montserrat text-[12px] max-[639px]:text-[11px] leading-[150%]">|</span>
+        <span class="text-black font-montserrat text-[12px] max-[639px]:text-[11px] leading-[150%] line-clamp-1">{{ $novedad->title }}</span>
+                </nav>
+            </div>
+        </div>
+        <h1 class="text-[40px] pt-[43px] font-bold">Novedades</h1>
+        </div>
+    </div>
+  
 
-    <div class="max-w-[1224px] mx-auto grid grid-cols-1 lg:grid-cols-[minmax(0,3fr)_minmax(260px,1fr)] gap-[32px] mt-[58px] mb-[160px] max-[1199px]:px-4 max-[1199px]:mt-[32px] max-[1199px]:mb-[80px] max-[1199px]:flex max-[1199px]:flex-col max-[1199px]:gap-[24px]">
+    <div class="max-w-[1224px] mx-auto flex justify-center max-[1199px]:px-4">
         
-        <div class="max-[1199px]:order-2">
+        <div class="mt-[50px] max-[1199px]:mt-10 max-[639px]:mt-8 w-full">
             @if($showDetail)
-                <div class="w-full md:w-[800px] flex flex-col max-[1199px]:w-full">
-                    <div class="max-w-[808px] mb-[40px] flex justify-center max-[1199px]:mb-[24px] max-[1199px]:max-w-full">
+                <div class="w-full md:w-[900px] flex flex-col max-[1199px]:w-full mx-auto">
+                    <div class="max-w-[900px] max-h-[450px] mb-[40px] flex justify-center max-[1199px]:mb-[24px] max-[1199px]:max-w-full max-[1199px]:max-h-[350px] max-[767px]:max-h-[300px] max-[639px]:max-h-[250px] max-[639px]:mb-5 overflow-hidden rounded-[4px]">
                         <img 
                             src="{{ Storage::url($novedad->image) }}" 
                             alt="{{ $novedad->title }}"
-                            class="w-full max-h-[422px] object-cover max-[1199px]:max-h-[300px]"
+                            class="w-full max-h-[422px] object-cover max-[1199px]:max-h-[350px] max-[767px]:max-h-[300px] max-[639px]:max-h-[250px] transition-transform duration-500"
                         >
                     </div>
 
-                    <p class="text-black font-montserrat text-[16px] font-normal leading-[120%] max-[1199px]:text-[14px]">
+                    <p class="text-[#23378C] font-Inter text-[18px] font-normal leading-[120%] max-[1199px]:text-[16px] max-[767px]:text-[15px] max-[639px]:text-[14px] animate-fadeIn">
                         {{ $novedad->novcategories->first()->title ?? 'Novedad' }}
                     </p>
 
-                    <h1 class="text-black font-montserrat text-[32px] font-medium leading-[120%] w-[724px] mb-[24px] max-[1199px]:w-full max-[1199px]:text-[24px] max-[1199px]:mb-[16px]">
+                    <h1 class="text-black font-Inter text-[34px] mt-[8px] font-bold leading-[120%] w-[724px] mb-[24px] max-[1199px]:w-full max-[1199px]:text-[28px] max-[767px]:text-[24px] max-[639px]:text-[22px] max-[1199px]:mb-[16px] max-[639px]:mb-4 max-[639px]:mt-2 animate-fadeIn">
                         {{ $novedad->title }}
                     </h1>
 
-                    <div class="text-[#323232] font-montserrat text-[16px] font-normal leading-[150%] w-[786px] content-description max-[1199px]:w-full max-[1199px]:text-[14px]">
+                    <div class="text-[#111] font-Inter text-[18px] font-normal leading-[150%] w-[786px] content-description max-[1199px]:w-full max-[1199px]:text-[16px] max-[767px]:text-[15px] max-[639px]:text-[14px] max-[639px]:leading-[160%] animate-fadeIn">
                         {!! str_replace('&nbsp;', ' ', $novedad->description) !!}
                     </div>
                 </div>
-            @else
-                @if($novedades && $novedades->count() === 0)
-                    <p class="text-gray-500">No se encontraron novedades.</p>
-                @else
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-[24px] justify-items-start max-[1199px]:grid-cols-1 max-[1199px]:gap-[16px]">
-                        @foreach ($novedades as $nov)
-                        <a wire:navigate href="/novedades/{{ $nov->id }}" 
-                            class="w-full md:w-[392px] h-[532px] bg-white rounded-[12px] overflow-hidden cursor-pointer group
-                                   max-[1199px]:h-auto max-[1199px]:w-full">
-
-                            <div class="w-full h-[288px] overflow-hidden max-[1199px]:h-[200px]">
-                                <img src="{{ Storage::url($nov->image) }}"
-                                     class="w-full h-full object-cover transition duration-300 group-hover:scale-105">
-                            </div>
-
-                            <div class="flex flex-col justify-between h-[243px] max-[1199px]:h-auto max-[1199px]:p-4">
-                                <div>
-                                    <p class="text-black font-montserrat text-[16px] font-normal leading-[120%] mt-[16px] mb-[10px] max-[1199px]:text-[14px] max-[1199px]:mt-0">
-                                        {{ $nov->novcategories->first()->title ?? 'Novedad' }}
-                                    </p>
-
-                                    <h3 class="text-black font-montserrat text-[24px] font-medium leading-[120%] mb-[16px] max-[1199px]:text-[20px] max-[1199px]:mb-[12px]">
-                                        {{ $nov->title }}
-                                    </h3>
-
-                                    <p class="text-black font-montserrat text-[16px] font-normal leading-[150%] line-clamp-3 max-[1199px]:text-[14px]">
-                                        {{ preg_replace('/(&nbsp;)+$/', '', strip_tags($nov->description))}}
-                                    </p>
-                                </div>
-                                <span class="text-[#323232] font-montserrat text-[16px] opacity-50 font-normal leading-[150%] hover:underline max-[1199px]:text-[14px] max-[1199px]:mt-3">
-                                    Ver más
-                                </span>
-                            </div>
-                        </a>
-                        @endforeach
-                    </div>
-
-                    @if($novedades->total() > $novedades->perPage())
-                    <div class="mt-10 flex flex-col items-center gap-3 max-[1199px]:mt-6">
-                        <div class="flex justify-center">
-                            {{ $novedades->links() }}
-                        </div>
-
-                        <p class="text-sm text-gray-600 max-[1199px]:text-xs">
-                            Mostrando 
-                            {{ $novedades->firstItem() }} 
-                            a 
-                            {{ $novedades->lastItem() }} 
-                            de 
-                            {{ $novedades->total() }} 
-                            resultados
-                        </p>
-                    </div>
-                    @endif
-                @endif
             @endif
         </div>
-
-        <div class="max-[1199px]:order-1">
-            <div class="relative max-[1199px]:w-full">
-                <input
-                    type="text"
-                    wire:model.live.debounce.500ms="search"
-                    placeholder="Buscar..."
-                    class="rounded-[26px] border border-[#DEDFE0] w-[288px] h-[54px] placeholder:text-black pl-[17px] font-montserrat text-[14px] font-normal leading-[150%] max-[1199px]:w-full"
-                >
-                <svg class="w-4 h-4 absolute right-6 top-1/2 -translate-y-1/2 text-[#222]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z" />
-                </svg>
-            </div>
-
-            <div x-data="{ openCat: true }" class="pt-[42px] max-[1199px]:pt-[24px]">
-                <div class="flex items-center justify-between cursor-pointer mb-[6px] w-[288px] max-[1199px]:w-full"
-                     @click="openCat = !openCat">
-                    <h3 class="text-black font-montserrat text-[20px] font-normal leading-[120%] max-[1199px]:text-[18px]">Categorías</h3>
-                    <svg class="w-4 h-4 text-[#1B1A17] transition-transform duration-300"
-                         :class="openCat ? 'rotate-180' : ''"
-                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M19 9l-7 7-7-7" />
-                    </svg>
-                </div>
-
-                <div class="space-y-1 border-t border-[#EEEEEF] pt-3 w-[288px] max-[1199px]:w-full"
-                     x-show="openCat"
-                     x-transition>
-                    <button
-                        type="button"
-                        wire:click="clearCategory"
-                        class="w-[288px] h-[50px] flex items-center justify-between pl-[17px] rounded-[10px]
-                               max-[1199px]:w-full cursor-pointer
-                               {{ $category === null 
-                                    ? 'bg-[#BA2025] text-white' 
-                                    : 'bg-[#EEEEEF] text-[#1B1A17] hover:bg-[#BA2025] hover:text-white' }}">
-                        <span>Todas</span>
-                    </button>
-
-                    @foreach($categories as $cat)
-                    <button
-                        type="button"
-                        wire:click="$set('category', {{ $cat->id }})"
-                        class="w-[288px] h-[50px] flex pl-[17px] items-center justify-between rounded-[10px]
-                               max-[1199px]:w-full cursor-pointer
-                               {{ $category === $cat->id 
-                                    ? 'bg-[#BA2025] text-white' 
-                                    : 'bg-[#F5F5F5] text-[#1B1A17] hover:bg-[#BA2025] hover:text-white' }}">
-                        <span>{{ $cat->title }}</span>
-                        <span class="w-[50px] h-[50px] bg-[#313131] flex-shrink-0 text-white text-center font-jost text-base font-medium leading-[50px] rounded-tr-[10px] rounded-br-[10px]">
-                            {{ $cat->novedades_count }}
-                        </span>
-                    </button>
-                    @endforeach
-                </div>
-            </div>
-
-            <div x-data="{ openArc: true }" class="pt-[30px] w-[288px] max-[1199px]:w-full max-[1199px]:pt-[24px]">
-                <div class="flex items-center justify-between cursor-pointer mb-3"
-                     @click="openArc = !openArc">
-                    <h3 class="text-black font-montserrat text-[20px] font-normal leading-[120%] max-[1199px]:text-[18px]">
-                        Archivo
-                    </h3>
-                    <svg class="w-4 h-4 text-[#1B1A17] transition-transform duration-300"
-                         :class="openArc ? 'rotate-180' : ''"
-                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M19 9l-7 7-7-7" />
-                    </svg>
-                </div>
-
-                <div class="space-y-1 border-t border-[#EEEEEF] pt-3"
-                     x-show="openArc"
-                     x-transition>
-                    <button
-                        type="button"
-                        wire:click="clearMonth"
-                        class="w-[288px] h-[50px] pl-[17px] flex items-center justify-between rounded-[10px]
-                               max-[1199px]:w-full cursor-pointer
-                               {{ $month === null 
-                                    ? 'bg-[#BA2025] text-white' 
-                                    : 'bg-[#EEEEEF] text-[#222] hover:bg-[#BA2025] hover:text-white' }}">
-                        <span class="font-montserrat text-[16px] font-normal leading-[150%]">Todos</span>
-                    </button>
-
-                    @foreach($archive as $item)
-                    @php
-                        $date = Carbon::create($item->year, $item->month, 1);
-                        $value = $item->year . '-' . str_pad($item->month, 2, '0', STR_PAD_LEFT);
-                    @endphp
-
-                    <button
-                        type="button"
-                        wire:click="$set('month', '{{ $value }}')"
-                        class="w-[288px] h-[50px] pl-[17px] flex items-center justify-between
-                               max-[1199px]:w-full cursor-pointer rounded-[10px]
-                               {{ $month === $value 
-                                    ? 'bg-[#BA2025] text-white' 
-                                    : 'bg-[#F5F5F5] text-[#1B1A17] hover:bg-[#BA2025] hover:text-white' }}">
-                        <span>{{ $date->translatedFormat('F Y') }}</span>
-                        <span class="w-[50px] h-[50px] bg-[#313131] text-white text-center font-jost text-base font-medium leading-[50px] rounded-tr-[10px] rounded-br-[10px]">
-                            {{ $item->count }}
-                        </span>
-                    </button>
-                    @endforeach
-                </div>
-            </div>
-        </div>
     </div>
+
+    <style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fadeIn {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        
+        .animate-fadeIn:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+        
+        .animate-fadeIn:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .animate-fadeIn:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .content-description p {
+            margin-bottom: 1rem;
+        }
+
+        .content-description h2,
+        .content-description h3 {
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .content-description ul,
+        .content-description ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .content-description a {
+            color: #23378C;
+            text-decoration: underline;
+            transition: opacity 0.2s;
+        }
+
+        .content-description img {
+            max-width: 100%;
+            height: auto;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 1199px) {
+            .content-description p {
+                margin-bottom: 0.875rem;
+            }
+
+            .content-description h2,
+            .content-description h3 {
+                margin-top: 1.25rem;
+                margin-bottom: 0.625rem;
+            }
+
+            .content-description ul,
+            .content-description ol {
+                margin-left: 1.25rem;
+                margin-bottom: 0.875rem;
+            }
+
+            .content-description img {
+                margin: 1.25rem 0;
+            }
+        }
+
+        @media (max-width: 639px) {
+            .content-description p {
+                margin-bottom: 0.75rem;
+            }
+
+            .content-description h2,
+            .content-description h3 {
+                margin-top: 1rem;
+                margin-bottom: 0.5rem;
+                font-size: 1.125rem;
+            }
+
+            .content-description ul,
+            .content-description ol {
+                margin-left: 1rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .content-description img {
+                margin: 1rem 0;
+            }
+        }
+    </style>
 </div>

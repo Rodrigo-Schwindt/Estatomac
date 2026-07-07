@@ -40,54 +40,66 @@
 
         <div class="flex items-center gap-2">
             <input type="checkbox" name="destacado"
-                   class="w-4 h-4 text-blue-600 border-slate-300 rounded">
+                   class="w-4 h-4 text-blue-600 border-slate-300 rounded cursor-pointer">
             <label class="text-sm font-medium text-slate-800">Destacado</label>
         </div>
 
-<div class="space-y-1">
-    <label class="text-sm font-medium text-slate-800">Categorías*</label>
+        <div class="space-y-1">
+            <label class="text-sm font-medium text-slate-800">Categorías*</label>
 
-    <div class="border border-slate-300 rounded-md bg-white max-h-48 overflow-y-auto p-2 space-y-1 mt-2">
+            <div class="border border-slate-300 rounded-md bg-white max-h-48 overflow-y-auto p-2 space-y-1 mt-2">
 
-        @foreach($categories as $cat)
-            <label class="flex items-center gap-2 px-2 py-1 cursor-pointer hover:bg-slate-50 rounded">
-                <input 
-                    type="checkbox" 
-                    name="selectedCategories[]" 
-                    value="{{ $cat->id }}"
-                    class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
-                >
+                @foreach($categories as $cat)
+                    <label class="flex items-center gap-2 px-2 py-1 cursor-pointer hover:bg-slate-50 rounded">
+                        <input 
+                            type="checkbox" 
+                            name="selectedCategories[]" 
+                            value="{{ $cat->id }}"
+                            class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 cursor-pointer"
+                        >
 
-                <span class="text-sm text-slate-700">
-                    {{ $cat->title }}
-                </span>
-            </label>
-        @endforeach
+                        <span class="text-sm text-slate-700">
+                            {{ $cat->title }}
+                        </span>
+                    </label>
+                @endforeach
 
-    </div>
+            </div>
 
-    @error('selectedCategories')
-        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
-    @enderror
-</div>
+            @error('selectedCategories')
+                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
 
         <div>
-            <label class="block mb-1 text-sm font-medium text-slate-800">Imagen Principal</label>
+            <label class="block mb-2 text-sm font-medium text-slate-800">Imagen Principal</label>
 
-            <img id="preview-image" class="hidden w-32 h-32 object-cover rounded-md border border-slate-200 mb-2">
-
-            <input type="file" name="image" required class="hidden" id="img1" accept="image/*">
+            <input type="file" name="image" required class="hidden" id="img1" accept="image/*" onchange="previewImage(event)">
 
             <button type="button"
                     onclick="document.getElementById('img1').click()"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition cursor-pointer">
+                    class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition cursor-pointer mb-3">
                 Subir Imagen
             </button>
-                                   <p class="text-xs text-slate-500 leading-relaxed">
-             Recomendado 800×800px • JPG / PNG / WEBP • Máx 3MBa.
-    </p>
-        </div>
 
+            <p class="text-xs text-slate-500 mb-3">
+                Recomendado: 800x800px o proporción 1:1
+            </p>
+
+            <div id="imageContainer">
+                <div id="imagePlaceholder" class="w-64 h-64 border-2 border-dashed border-slate-300 rounded-md flex items-center justify-center bg-slate-50">
+                    <div class="text-center text-slate-400">
+                        <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <p class="text-sm">Vista previa</p>
+                    </div>
+                </div>
+                <div id="imagePreview" class="hidden">
+                    <img id="preview-image" src="" alt="Preview" class="w-64 h-64 object-cover rounded-md shadow-sm border border-slate-200">
+                </div>
+            </div>
+        </div>
 
         <div class="flex justify-end space-x-3 pt-4 border-t border-slate-200">
             <a href="{{ route('novedades.index') }}"
@@ -96,7 +108,7 @@
             </a>
 
             <button type="submit"
-                    class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                    class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition cursor-pointer">
                 Crear Novedad
             </button>
         </div>
@@ -111,31 +123,32 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-            let editorDescription;
-
+    let editorDescription;
 
     ClassicEditor
         .create(document.querySelector('#description'))
         .then(e => editorDescription = e)
         .catch(error => console.error(error));
-
-    document.getElementById('img1').addEventListener('change', function() {
-        const file = this.files[0];
-        if (!file) return;
-        const preview = document.getElementById('preview-image');
-        preview.src = URL.createObjectURL(file);
-        preview.classList.remove('hidden');
-    });
-
-    document.getElementById('img2').addEventListener('change', function() {
-        const file = this.files[0];
-        if (!file) return;
-        const preview = document.getElementById('preview-banner');
-        preview.src = URL.createObjectURL(file);
-        preview.classList.remove('hidden');
-    });
-
 });
+
+function previewImage(event) {
+    const placeholder = document.getElementById('imagePlaceholder');
+    const preview = document.getElementById('imagePreview');
+    const img = document.getElementById('preview-image');
+    
+    if (event.target.files && event.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            img.src = e.target.result;
+            placeholder.classList.add('hidden');
+            preview.classList.remove('hidden');
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    } else {
+        placeholder.classList.remove('hidden');
+        preview.classList.add('hidden');
+    }
+}
 </script>
 
 @endsection

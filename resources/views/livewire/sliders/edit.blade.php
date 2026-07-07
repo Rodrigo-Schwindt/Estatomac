@@ -110,22 +110,7 @@
                       placeholder="Descripción opcional del slider">{{ $slider->description }}</textarea>
             <p id="description-error" class="mt-1 text-red-600 text-sm hidden"></p>
         </div>
-                    <label for="title" class="block text-sm font-medium text-slate-900 mb-2">
-                URL
-            </label>
-            <input type="url"
-       id="url"
-       name="url"
-       value="{{ $slider->url }}"
-       placeholder="https://tudominio.com/..."
-       class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none">
 
-
-    <p id="url-error" class="mt-1 text-red-600 text-sm hidden"></p>
-
-    <p class="text-xs text-slate-500 mt-1">
-        URL de destino del boton.
-    </p>
 
         <div>
             <label for="orden" class="block text-sm font-medium text-slate-900 mb-2">
@@ -138,6 +123,28 @@
                    class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none font-mono uppercase"
                    placeholder="Ej: AA, AB, AC, etc.">
             <p id="orden-error" class="mt-1 text-red-600 text-sm hidden"></p>
+        </div>
+
+        <div>
+            <label for="url" class="block text-sm font-medium text-slate-900 mb-2">Link (URL)</label>
+            <input type="url"
+                   id="url"
+                   name="url"
+                   value="{{ $slider->url }}"
+                   class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                   placeholder="https://...">
+            <p id="url-error" class="mt-1 text-red-600 text-sm hidden"></p>
+        </div>
+
+        <div>
+            <label for="button_text" class="block text-sm font-medium text-slate-900 mb-2">Texto del botón</label>
+            <input type="text"
+                   id="button_text"
+                   name="button_text"
+                   value="{{ $slider->button_text }}"
+                   class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                   placeholder="Ej: Ver más, Comprar, Contactar...">
+            <p id="button_text-error" class="mt-1 text-red-600 text-sm hidden"></p>
         </div>
 
         <div class="flex justify-end space-x-3 pt-4 border-t border-slate-200">

@@ -13,7 +13,8 @@ class Sliders extends Model
         'description',
         'image',
         'orden',
-        'url'
+        'url',
+        'button_text'
     ];
 
     public function run(): void
